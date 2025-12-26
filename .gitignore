@@ -1,6 +1,13 @@
 # macOS
 .DS_Store
 
+# Hidden directories (temp, cache, etc.)
+.temp/
+.claude/
+
+# Claude Code instructions (local only)
+CLAUDE.md
+
 # History files
 .Rhistory
 .Rapp.history
