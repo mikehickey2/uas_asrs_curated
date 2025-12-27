@@ -12,8 +12,11 @@ Key observations about data completeness:
 
 - The dataset represents a curated sample of UAS encounters, not a random sample of all aviation safety reports.
 - Core identification fields (report ID, date) are complete for all 50 reports.
-- Operational context variables (time of day, flight phase, airspace) are 
-  available for the majority of reports, though availability varies by field.
+- Operational context variables show varying availability: time of day was
+  reported for 46 of 50 reports (92%); flight phase was reported for 47 of
+  50 reports (94%), with 3 coded as 'Unknown'; airspace class was reported
+  for 30 of 50 reports (60%), with 20 coded as 'Unknown'; and light
+  conditions were reported for 26 of 50 reports (52%).
 - Event coding fields (anomaly tags, contributing factors) are complete, 
   reflecting ASRS analyst review.
 - Miss distance information is available for a subset of reports where 
@@ -23,13 +26,13 @@ Key observations about data completeness:
 
 ## Operational context of encounters
 
-**Time of day**: The most common reporting period was 1201-1800, accounting for 21 of 46 reports with time data available (45.7%). This aligns with typical daytime flight operations.
+**Time of day**: The most common reporting period was 1201-1800, accounting for 21 of 46 reports with time data reported (46%). Four reports lacked time of day data. This aligns with typical daytime flight operations.
 
-**Flight phase**: Arrival phase accounted for 23 of 50 reports with phase available (46%), followed by Enroute (13 reports, 26%).
+**Flight phase**: Arrival phase accounted for 23 of 47 reports with phase reported (49%), followed by Enroute (13 reports, 28%). Three reports were coded as 'Unknown' (missing/not reported).
 
-**Airspace class**: Class B airspace was most frequently reported, appearing in 13 of 50 reports with airspace data (26%).
+**Airspace class**: Class B airspace was most frequently reported, appearing in 13 of 30 reports with airspace class reported (43%). Twenty reports were coded as 'Unknown' (missing/not reported).
 
-**Light conditions**: Daylight conditions were present in 19 of 26 reports with lighting data (73.1%).
+**Light conditions**: Daylight conditions were present in 19 of 26 reports with lighting data reported (73%). Twenty-four reports lacked light condition data.
 
 ## Detection and reporting patterns
 
@@ -57,24 +60,30 @@ and should not be generalized to all UAS encounters.
 
 ### Top anomaly tags
 
-1. **Deviation / Discrepancy - Procedural FAR**: 42 reports (84%)
-2. **Deviation / Discrepancy - Procedural Published Material / Policy**: 42 reports (84%)
-3. **Airspace Violation All Types**: 41 reports (82%)
+Counts reflect report-level presence (each tag counted once per report,
+regardless of how many times it appears within that report).
+
+1. **Deviation / Discrepancy - Procedural FAR**: 42 of 50 reports (84%)
+2. **Deviation / Discrepancy - Procedural Published Material / Policy**: 42 of 50 reports (84%)
+3. **Airspace Violation All Types**: 41 of 50 reports (82%)
 
 ### Top contributing factors
 
-1. **Human Factors**: 46 reports (92%)
-2. **Software and Automation**: 9 reports (18%)
-3. **Procedure**: 7 reports (14%)
+Counts reflect report-level presence (each tag counted once per report,
+regardless of how many times it appears within that report).
+
+1. **Human Factors**: 46 of 50 reports (92%)
+2. **Software and Automation**: 9 of 50 reports (18%)
+3. **Procedure**: 7 of 50 reports (14%)
 
 ### Co-occurring contributing factor themes
 
 The following factor pairs frequently appeared together within the same 
 reports, suggesting thematic associations rather than causal relationships:
 
-- **Aircraft** and **Software and Automation**: co-occurred in 5 reports (10%)
-- **Chart Or Publication** and **Human Factors**: co-occurred in 5 reports (10%)
-- **Environment - Non Weather Related** and **Human Factors**: co-occurred in 5 reports (10%)
+- **Aircraft** and **Software and Automation**: co-occurred in 5 of 50 reports (10%)
+- **Chart Or Publication** and **Human Factors**: co-occurred in 5 of 50 reports (10%)
+- **Environment - Non Weather Related** and **Human Factors**: co-occurred in 5 of 50 reports (10%)
 
 ## What these descriptives do and do not support
 
