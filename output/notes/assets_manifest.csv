@@ -1,12 +1,12 @@
 type,number,id,filename,path,exists,file_size_kb,last_modified
-Table,1,table1,table1_overview_completeness.csv,output/tables/table1_overview_completeness.csv,TRUE,  2.8,2025-12-26 23:29:29
-Table,2,table2,table2_operational_context.csv,output/tables/table2_operational_context.csv,TRUE,  1.5,2025-12-26 23:29:29
-Table,2a,table2a,table2_optional_crosstabs.csv,output/tables/table2_optional_crosstabs.csv,TRUE,  3.3,2025-12-26 23:29:29
-Table,3,table3,table3_severity_markers.csv,output/tables/table3_severity_markers.csv,TRUE,307.2B,2025-12-26 23:29:29
-Table,4,table4,table4_nmac_by_context.csv,output/tables/table4_nmac_by_context.csv,TRUE,  1.4,2025-12-27 00:01:32
-Figure,1,fig1,fig1_detector_by_phase.png,output/figures/fig1_detector_by_phase.png,TRUE,120.1,2025-12-26 23:42:04
-Figure,2,fig2,fig2_severity_markers_ci.png,output/figures/fig2_severity_markers_ci.png,TRUE, 67.1,2025-12-26 23:42:04
-Figure,3,fig3,fig3_top_tags.png,output/figures/fig3_top_tags.png,TRUE,278.6,2025-12-26 23:42:05
-Figure,4,fig4,fig4_nmac_by_phase_ci.png,output/figures/fig4_nmac_by_phase_ci.png,TRUE, 64.1,2025-12-27 00:01:32
-Figure,5,fig5,fig5_nmac_by_detector_ci.png,output/figures/fig5_nmac_by_detector_ci.png,TRUE, 65.9,2025-12-27 00:01:32
-Figure,6,fig6,fig6_nmac_by_timeblock_ci.png,output/figures/fig6_nmac_by_timeblock_ci.png,TRUE, 65.8,2025-12-27 00:01:32
+Table,1,table1,table1_overview_completeness.csv,output/tables/table1_overview_completeness.csv,TRUE,  2.8,2025-12-27 01:39:00
+Table,2,table2,table2_operational_context.csv,output/tables/table2_operational_context.csv,TRUE,  1.5,2025-12-27 01:39:00
+Table,2a,table2a,table2_optional_crosstabs.csv,output/tables/table2_optional_crosstabs.csv,TRUE,  3.3,2025-12-27 01:39:00
+Table,3,table3,table3_severity_markers.csv,output/tables/table3_severity_markers.csv,TRUE,307.2B,2025-12-27 01:39:00
+Table,4,table4,table4_nmac_by_context.csv,output/tables/table4_nmac_by_context.csv,TRUE,  1.4,2025-12-27 01:39:01
+Figure,1,fig1,fig1_detector_by_phase.png,output/figures/fig1_detector_by_phase.png,TRUE,120.1,2025-12-27 01:39:00
+Figure,2,fig2,fig2_severity_markers_ci.png,output/figures/fig2_severity_markers_ci.png,TRUE, 67.1,2025-12-27 01:39:01
+Figure,3,fig3,fig3_top_tags.png,output/figures/fig3_top_tags.png,TRUE,278.6,2025-12-27 01:39:01
+Figure,4,fig4,fig4_nmac_by_phase_ci.png,output/figures/fig4_nmac_by_phase_ci.png,TRUE, 64.1,2025-12-27 01:39:01
+Figure,5,fig5,fig5_nmac_by_detector_ci.png,output/figures/fig5_nmac_by_detector_ci.png,TRUE, 65.9,2025-12-27 01:39:01
+Figure,6,fig6,fig6_nmac_by_timeblock_ci.png,output/figures/fig6_nmac_by_timeblock_ci.png,TRUE, 65.8,2025-12-27 01:39:01

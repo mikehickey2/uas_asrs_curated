@@ -25,11 +25,11 @@
 #'
 #' @export
 as_apa_flextable <- function(df,
-                              title = NULL,
-                              note = NULL,
-                              font_name = "Times New Roman",
-                              font_size = 11,
-                              header_size = 11) {
+                             title = NULL,
+                             note = NULL,
+                             font_name = "Times New Roman",
+                             font_size = 11,
+                             header_size = 11) {
   checkmate::assert_data_frame(df, min.rows = 1)
   checkmate::assert_string(title, null.ok = TRUE)
   checkmate::assert_string(note, null.ok = TRUE)
