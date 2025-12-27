@@ -181,8 +181,9 @@ asrs_valid_values <- list(
   ),
   ac1__flight_operated_as_uas = c("VLOS", "BVLOS"),
   ac2__flight_operated_as_uas = c("VLOS", "BVLOS"),
-  component__problem = c("Design", "Failed", "Improperly Operated",
-    "Malfunctioning"),
+  component__problem = c(
+    "Design", "Failed", "Improperly Operated", "Malfunctioning"
+  ),
   ac1__cabin_lighting = c("High", "Medium", "Low", "Off"),
   ac2__cabin_lighting = c("High", "Medium", "Low", "Off")
 )

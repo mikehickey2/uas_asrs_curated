@@ -148,5 +148,5 @@ If you use this software in academic work, please cite:
 Michael J. Hickey  
 ORCID: [0009-0009-1402-1228](https://orcid.org/0009-0009-1402-1228)  
 Email: [michael.j.hickey@und.edu](mailto:michael.j.hickey@und.edu)  
-LinkedIn: [michael-hickey-mba](https://www.linkedin.com/in/michael-hickey-mba/)
+LinkedIn: [michael-hickey-mba](https://www.linkedin.com/in/michael-hickey-mba/)  
 GitHub: [mikehickey2](https://github.com/mikehickey2)

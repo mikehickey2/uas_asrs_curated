@@ -1,0 +1,561 @@
+---
+title: "ASRS UAS Reports: Descriptive Analysis"
+date: today
+---
+
+## Setup and Data Load
+
+```{r}
+#| label: setup
+
+here::i_am("scripts/eda/01_descriptive_analysis.qmd")
+
+library(tidyverse)
+library(janitor)
+library(skimr)
+library(gt)
+library(scales)
+library(glue)
+
+# Source from project root so relative paths resolve correctly
+withr::with_dir(here::here(), source("R/import_asrs.R"))
+withr::with_dir(here::here(), source("R/validate_asrs.R"))
+
+asrs_data <- import_asrs(here::here("data/asrs_curated_drone_reports.csv"))
+validate_asrs(asrs_data, strict = FALSE)
+```
+
+```{r}
+#| label: validation-status
+
+# Validation runs above in setup chunk; warnings/messages display naturally.
+# Re-run here to show validation summary in report output.
+validate_asrs(asrs_data, strict = FALSE)
+```
+
+```{r}
+#| label: test-status
+
+# Run tests with summary reporter - output displays naturally
+withr::with_dir(
+  here::here(),
+  testthat::test_dir("tests/testthat", reporter = "summary")
+)
+```
+
+## Data Overview
+
+```{r}
+#| label: data-overview
+
+skim(asrs_data)
+```
+
+```{r}
+#| label: missingness
+
+missingness <- asrs_data |>
+  summarise(across(everything(), \(x) sum(is.na(x)))) |>
+  pivot_longer(everything(), names_to = "column", values_to = "n_missing") |>
+  mutate(pct_missing = n_missing / nrow(asrs_data) * 100) |>
+  arrange(desc(n_missing)) |>
+  filter(n_missing > 0)
+
+missingness |>
+  gt() |>
+  fmt_number(columns = pct_missing, decimals = 1) |>
+  cols_label(
+    column = "Column",
+    n_missing = "Missing (n)",
+    pct_missing = "Missing (%)"
+  )
+```
+
+```{r}
+#| label: dimensions
+
+tibble(
+  metric = c("Rows", "Columns", "Date Range Start", "Date Range End"),
+  value = c(
+    nrow(asrs_data),
+    ncol(asrs_data),
+    as.character(min(asrs_data$time__date, na.rm = TRUE)),
+    as.character(max(asrs_data$time__date, na.rm = TRUE))
+  )
+) |>
+  gt() |>
+  cols_label(metric = "Metric", value = "Value")
+```
+
+## Identify Reporter Populations
+
+```{r}
+#| label: reporter-type
+
+uas_role_pattern <- regex(
+  "Remote PIC|Person Manipulating Controls|Visual Observer",
+  ignore_case = TRUE
+)
+uas_loc_pattern <- regex(
+  "Field Station.*UAS|Ground Control Station.*UAS",
+  ignore_case = TRUE
+)
+atc_pattern <- regex(
+  paste(
+    c("Approach", "Departure", "Enroute", "Ground", "Local",
+      "Flight Data", "Clearance", "Supervisor", "CIC", "ATC"),
+    collapse = "|"
+  ),
+  ignore_case = TRUE
+)
+manned_role_pattern <- regex(
+  paste(
+    c("Captain", "First Officer", "Check Pilot", "Flight Engineer",
+      "Pilot Flying", "Pilot Not Flying", "Relief Pilot",
+      "Single Pilot", "Flight Crew", "Instructor"),
+    collapse = "|"
+  ),
+  ignore_case = TRUE
+)
+manned_loc_pattern <- regex("Aircraft", ignore_case = TRUE)
+
+asrs_data <- asrs_data |>
+  mutate(
+    is_uas_role = str_detect(
+      person1__function,
+      uas_role_pattern
+    ) |
+      str_detect(
+        person2__function,
+        uas_role_pattern
+      ),
+    is_uas_location = str_detect(
+      person1__location_of_person,
+      uas_loc_pattern
+    ) |
+      str_detect(
+        person2__location_of_person,
+        uas_loc_pattern
+      ),
+    is_atc = str_detect(
+      person1__function,
+      atc_pattern
+    ) |
+      str_detect(
+        person2__function,
+        atc_pattern
+      ),
+    is_manned_role = str_detect(
+      person1__function,
+      manned_role_pattern
+    ) |
+      str_detect(
+        person2__function,
+        manned_role_pattern
+      ),
+    is_manned_location = str_detect(
+      person1__location_of_person,
+      manned_loc_pattern
+    ) |
+      str_detect(
+        person2__location_of_person,
+        manned_loc_pattern
+      ),
+    reporter_type = case_when(
+      is_uas_role | is_uas_location ~ "UAS Operator",
+      is_atc ~ "ATC",
+      is_manned_role | is_manned_location ~ "Manned Aircraft",
+
+      # Explicit NA handling
+      is.na(person1__location_of_person) &
+        is.na(person2__location_of_person) ~ "Unknown",
+
+      # Fallback
+      TRUE ~ "Other"
+    )
+  )
+
+asrs_data |>
+  tabyl(reporter_type) |>
+  adorn_pct_formatting() |>
+  gt() |>
+  cols_label(
+    reporter_type = "Reporter Type",
+    n = "Count",
+    percent = "Percent"
+  )
+```
+
+```{r}
+#| label: reporter-type-validation
+#| echo: false
+
+asrs_data |>
+  mutate(
+    p1_function = coalesce(person1__function, "NA"),
+    p2_function = coalesce(person2__function, "NA"),
+    p1_location = coalesce(person1__location_of_person, "NA"),
+    p2_location = coalesce(person2__location_of_person, "NA")
+  ) |>
+  count(
+    reporter_type,
+    p1_function,
+    p2_function,
+    p1_location,
+    p2_location,
+    sort = TRUE
+  ) |>
+  slice_head(n = 15) |>
+  gt() |>
+  tab_header(title = "Reporter Classification Validation (Top 15)") |>
+  cols_label(
+    reporter_type = "Reporter Type",
+    p1_function = "Person1 Function",
+    p2_function = "Person2 Function",
+    p1_location = "Person1 Location",
+    p2_location = "Person2 Location",
+    n = "Count"
+  )
+```
+
+## Categorical Frequencies
+
+```{r}
+#| label: freq-table-function
+
+freq_table <- function(data, var, include_missing = TRUE) {
+  var_sym <- rlang::ensym(var)
+  total_n <- nrow(data)
+
+  tbl <- data |>
+    mutate(
+      value = dplyr::if_else(
+        is.na(!!var_sym),
+        "Missing",
+        as.character(!!var_sym)
+      )
+    ) |>
+    count(value, name = "n")
+
+  if (!include_missing) {
+    tbl <- tbl |> filter(value != "Missing")
+  }
+
+  tbl <- tbl |>
+    mutate(percent = n / total_n)
+
+  tbl_ordered <- bind_rows(
+    tbl |> filter(value != "Missing") |> arrange(desc(n)),
+    tbl |> filter(value == "Missing")
+  )
+
+  tbl_ordered |>
+    gt() |>
+    fmt_percent(columns = percent, decimals = 1) |>
+    cols_label(
+      value = deparse(var_sym),
+      n = "Count",
+      percent = "Percent"
+    )
+}
+```
+
+### Time of Day
+
+```{r}
+#| label: freq-time-of-day
+
+freq_table(asrs_data, time__local_time_of_day)
+```
+
+### Flight Conditions
+
+```{r}
+#| label: freq-flight-conditions
+
+freq_table(asrs_data, environment__flight_conditions)
+```
+
+### Light Conditions
+
+```{r}
+#| label: freq-light
+
+freq_table(asrs_data, environment__light)
+```
+
+### FAR Part
+
+```{r}
+#| label: freq-far-part
+
+freq_table(asrs_data, ac1__operating_under_far_part)
+```
+
+### Airspace
+
+```{r}
+#| label: freq-airspace
+
+freq_table(asrs_data, ac1__airspace)
+```
+
+### Primary Problem
+
+```{r}
+#| label: freq-primary-problem
+
+freq_table(asrs_data, assessments__primary_problem)
+```
+
+## Encounter Characteristics
+
+### Altitude Profile
+
+Where do UAS encounters occur? Most happen at relatively low altitudes, consistent
+with recreational and commercial drone operations under Part 107.
+
+```{r}
+#| label: altitude-summary
+
+tibble(
+  Metric = c("Altitude AGL (ft)", "Altitude MSL (ft)"),
+  N = c(
+    sum(!is.na(asrs_data$place__altitude_agl_single_value)),
+    sum(!is.na(asrs_data$place__altitude_msl_single_value))
+  ),
+  Median = c(
+    median(asrs_data$place__altitude_agl_single_value, na.rm = TRUE),
+    median(asrs_data$place__altitude_msl_single_value, na.rm = TRUE)
+  ),
+  Mean = c(
+    mean(asrs_data$place__altitude_agl_single_value, na.rm = TRUE),
+    mean(asrs_data$place__altitude_msl_single_value, na.rm = TRUE)
+  ),
+  Min = c(
+    min(asrs_data$place__altitude_agl_single_value, na.rm = TRUE),
+    min(asrs_data$place__altitude_msl_single_value, na.rm = TRUE)
+  ),
+  Max = c(
+    max(asrs_data$place__altitude_agl_single_value, na.rm = TRUE),
+    max(asrs_data$place__altitude_msl_single_value, na.rm = TRUE)
+  )
+) |>
+  gt() |>
+  fmt_number(columns = c(Median, Mean, Min, Max), decimals = 0)
+```
+
+```{r}
+#| label: altitude-distribution-agl
+#| fig-width: 10
+#| fig-height: 4
+#| fig-alt: "Histogram of UAS encounter altitudes above ground level (AGL) in feet, with a dashed red line at 400 feet indicating the Part 107 altitude limit."
+
+asrs_data |>
+  filter(!is.na(place__altitude_agl_single_value)) |>
+  ggplot(aes(x = place__altitude_agl_single_value)) +
+  geom_histogram(binwidth = 250, fill = "steelblue", color = "white") +
+  geom_vline(
+    xintercept = 400,
+    linetype = "dashed",
+    color = "red",
+    linewidth = 1
+  ) +
+  annotate(
+    "text", x = 500, y = Inf, label = "Part 107\n400 ft limit",
+    hjust = 0, vjust = 1.5, color = "red", size = 3
+  ) +
+  labs(
+    title = "Encounter Altitude (AGL)",
+    x = "Altitude AGL (feet)",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+#| label: altitude-distribution-msl
+#| fig-width: 10
+#| fig-height: 4
+#| fig-alt: "Histogram of UAS encounter altitudes above mean sea level (MSL) in feet, showing the distribution of reported encounter heights."
+
+asrs_data |>
+  filter(!is.na(place__altitude_msl_single_value)) |>
+  ggplot(aes(x = place__altitude_msl_single_value)) +
+  geom_histogram(binwidth = 1000, fill = "steelblue", color = "white") +
+  labs(
+    title = "Encounter Altitude (MSL)",
+    x = "Altitude MSL (feet)",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+### Proximity to Airports
+
+How close to airports and navigation aids do encounters occur?
+
+```{r}
+#| label: distance-summary
+
+asrs_data |>
+  filter(!is.na(place__relative_position_distance_nautical_miles)) |>
+  summarise(
+    N = n(),
+    Median = median(place__relative_position_distance_nautical_miles),
+    Mean = mean(place__relative_position_distance_nautical_miles),
+    Min = min(place__relative_position_distance_nautical_miles),
+    Max = max(place__relative_position_distance_nautical_miles)
+  ) |>
+  mutate(Metric = "Distance from Reference (nm)", .before = 1) |>
+  gt() |>
+  fmt_number(columns = c(Median, Mean), decimals = 1)
+```
+
+```{r}
+#| label: distance-distribution
+#| fig-width: 8
+#| fig-height: 4
+#| fig-alt: "Histogram of UAS encounter distances from airport or NAVAID reference points in nautical miles, with a dashed red line at 5 nm indicating typical Class D airspace radius."
+
+asrs_data |>
+  filter(!is.na(place__relative_position_distance_nautical_miles)) |>
+  ggplot(aes(x = place__relative_position_distance_nautical_miles)) +
+  geom_histogram(binwidth = 2, fill = "steelblue", color = "white") +
+  geom_vline(xintercept = 5, linetype = "dashed", color = "red", linewidth = 1) +
+  annotate(
+    "text", x = 6, y = Inf, label = "5 nm\n(Class D typical)",
+    hjust = 0, vjust = 1.5, color = "red", size = 3
+  ) +
+  labs(
+    title = "Distance from Airport/NAVAID Reference",
+    x = "Distance (nautical miles)",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+## Cross-tabulations
+
+### Reporter Type by FAR Part
+
+```{r}
+#| label: crosstab-reporter-far
+
+ct_farp_counts <- asrs_data |>
+  tabyl(reporter_type, ac1__operating_under_far_part) |>
+  adorn_totals("col")
+
+ct_farp_pct <- ct_farp_counts |>
+  adorn_percentages("row") |>
+  adorn_pct_formatting() |>
+  adorn_ns()
+
+ct_farp_total <- ct_farp_counts |>
+  adorn_totals("row") |>
+  filter(reporter_type == "Total") |>
+  mutate(across(-reporter_type, as.character))
+
+bind_rows(ct_farp_pct, ct_farp_total) |>
+  gt() |>
+  tab_header(title = "Reporter Type by FAR Part (Row %)")
+```
+
+### Reporter Type by Time of Day
+
+```{r}
+#| label: crosstab-reporter-time
+
+ct_time_counts <- asrs_data |>
+  tabyl(reporter_type, time__local_time_of_day) |>
+  adorn_totals("col")
+
+ct_time_pct <- ct_time_counts |>
+  adorn_percentages("row") |>
+  adorn_pct_formatting() |>
+  adorn_ns()
+
+ct_time_total <- ct_time_counts |>
+  adorn_totals("row") |>
+  filter(reporter_type == "Total") |>
+  mutate(across(-reporter_type, as.character))
+
+bind_rows(ct_time_pct, ct_time_total) |>
+  gt() |>
+  tab_header(title = "Reporter Type by Time of Day (Row %)")
+```
+
+## Visualizations
+
+### Reports by Month
+
+```{r}
+#| label: viz-reports-by-month
+#| fig-width: 10
+#| fig-height: 5
+#| fig-alt: "Bar chart showing the number of ASRS UAS reports per month over time."
+
+asrs_data |>
+  filter(!is.na(time__date)) |>
+  count(time__date) |>
+  ggplot(aes(x = time__date, y = n)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    title = "ASRS UAS Reports by Month",
+    subtitle = glue::glue(
+      "N = {sum(!is.na(asrs_data$time__date))} reports with valid dates"
+    ),
+    x = "Date",
+    y = "Number of Reports"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### Altitude AGL by Reporter Type
+
+```{r}
+#| label: viz-altitude-by-reporter
+#| fig-width: 8
+#| fig-height: 5
+#| fig-alt: "Box plot comparing altitude above ground level (AGL) distributions across different reporter types: ATC, Manned Aircraft, Other, UAS Operator, and Unknown."
+
+asrs_data |>
+  filter(!is.na(place__altitude_agl_single_value)) |>
+  ggplot(aes(x = reporter_type, y = place__altitude_agl_single_value)) +
+  geom_boxplot(fill = "steelblue", alpha = 0.7) +
+  labs(
+    title = "Altitude AGL by Reporter Type",
+    x = "Reporter Type",
+    y = "Altitude AGL (feet)"
+  ) +
+  theme_minimal()
+```
+
+### Incidents by Airspace Class
+
+```{r}
+#| label: viz-airspace-class
+#| fig-width: 8
+#| fig-height: 5
+#| fig-alt: "Horizontal bar chart showing the count of UAS incidents by airspace class, ordered from Class A through Class G and Unknown/Other."
+
+asrs_data |>
+  mutate(
+    airspace_class = str_extract(ac1__airspace, "Class [A-G]") |>
+      replace_na("Unknown/Other") |>
+      fct_relevel(
+        "Unknown/Other", "Class G", "Class E", "Class D",
+        "Class C", "Class B", "Class A"
+      )
+  ) |>
+  count(airspace_class, .drop = FALSE) |>
+  ggplot(aes(x = n, y = airspace_class)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    title = "UAS Incidents by Airspace Class",
+    x = "Number of Reports",
+    y = "Airspace Class"
+  ) +
+  theme_minimal()
+```

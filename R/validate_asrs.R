@@ -14,8 +14,8 @@ type_check <- function(df, cols, class, label) {
     return(validation_result(label, TRUE, "No columns to check"))
   }
   missing <- setdiff(cols, names(df))
-  bad_class <- setdiff(cols, missing) %>%
-    purrr::discard(~ inherits(df[[.x]], class))
+  remaining <- setdiff(cols, missing)
+  bad_class <- purrr::discard(remaining, ~ inherits(df[[.x]], class))
   ok <- length(missing) == 0 && length(bad_class) == 0
   msg <- if (ok) {
     glue::glue("{label} types ok")
@@ -72,8 +72,10 @@ validate_asrs <- function(
     type_check(df, logical_cols, "logical", "logical_cols"),
     type_check(
       df,
-      setdiff(expected_names, c(integer_cols, double_cols, logical_cols,
-        "acn", "time__date")),
+      setdiff(
+        expected_names,
+        c(integer_cols, double_cols, logical_cols, "acn", "time__date")
+      ),
       "character",
       "character_cols"
     ),
