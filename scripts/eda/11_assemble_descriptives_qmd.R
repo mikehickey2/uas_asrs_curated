@@ -73,6 +73,7 @@ figure_info <- parse_inventory_block(inventory, "^### Figure")
 # =============================================================================
 
 build_table_chunk <- function(id, csv_path, info) {
+  note_text <- info$denom
   c(
     glue("**{info$title}**"),
     "",
@@ -87,7 +88,14 @@ build_table_chunk <- function(id, csv_path, info) {
     "#| warning: false",
     "",
     glue('tbl <- readr::read_csv(here::here("{csv_path}"), show_col_types = FALSE)'),
-    "knitr::kable(tbl)",
+    "",
+    'is_docx <- knitr::pandoc_to() == "docx"',
+    "",
+    "if (is_docx) {",
+    glue('  as_apa_flextable(tbl, note = "{note_text}")'),
+    "} else {",
+    "  knitr::kable(tbl)",
+    "}",
     "```",
     ""
   )
@@ -125,8 +133,11 @@ qmd_lines <- c(
   glue("date: \"{Sys.Date()}\""),
   "format:",
   "  html:",
-  "    toc: true",
-  "    toc-depth: 3",
+  "    embed-resources: true",
+  "    toc: false",
+  "  docx:",
+  "    toc: false",
+  "    reference-doc: ../../assets/apa_reference.docx",
   "execute:",
   "  echo: false",
   "  warning: false",
@@ -137,6 +148,7 @@ qmd_lines <- c(
   "#| label: setup",
   "#| include: false",
   'here::i_am("scripts/eda/01_descriptive_analysis.qmd")',
+  "source(here::here('R/apa_tables.R'))",
   "```",
   "",
   "# Descriptive Findings",

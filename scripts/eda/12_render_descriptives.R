@@ -1,5 +1,5 @@
 # Render descriptive analysis QMD to HTML and DOCX
-# Includes preflight validation and format patching
+# Includes preflight validation and APA formatting
 
 library(readr)
 library(dplyr)
@@ -35,7 +35,9 @@ quarto_check <- Sys.which("quarto")
 if (quarto_check == "") {
   log_msg("  ERROR: Quarto not found on PATH")
   writeLines(log_lines, log_path)
- stop("Install Quarto or ensure it's on PATH. See https://quarto.org/docs/get-started/")
+  stop(
+    "Install Quarto or ensure it's on PATH. See https://quarto.org/docs/get-started/"
+  )
 }
 log_msg(glue("  Quarto found: {quarto_check}"))
 
@@ -75,7 +77,7 @@ if (nrow(missing_assets) > 0) {
 log_msg(glue("  All {nrow(manifest)} assets verified"))
 
 # =============================================================================
-# Patch YAML to support dual formats if needed
+# Verify QMD format configuration
 # =============================================================================
 
 log_msg("")
@@ -85,59 +87,17 @@ qmd_content <- readLines(qmd_path)
 qmd_text <- paste(qmd_content, collapse = "\n")
 
 has_docx <- grepl("docx:", qmd_text, fixed = TRUE)
-has_embed <- grepl("embed-resources:", qmd_text, fixed = TRUE)
+has_html <- grepl("html:", qmd_text, fixed = TRUE)
+has_ref_doc <- grepl("reference-doc:", qmd_text, fixed = TRUE)
 
-if (!has_docx || !has_embed) {
-  log_msg("  Patching YAML for dual-format output...")
-
-  yaml_start <- grep("^---$", qmd_content)[1]
-  yaml_end <- grep("^---$", qmd_content)[2]
-
-  if (is.na(yaml_start) || is.na(yaml_end)) {
-    log_msg("  ERROR: Could not parse YAML frontmatter")
-    writeLines(log_lines, log_path)
-    stop("Could not parse YAML frontmatter in QMD")
-  }
-
-  yaml_lines <- qmd_content[(yaml_start + 1):(yaml_end - 1)]
-  body_lines <- qmd_content[(yaml_end + 1):length(qmd_content)]
-
-  keep_lines <- character()
-  skip_until_unindent <- FALSE
-
-  for (line in yaml_lines) {
-    if (grepl("^format:", line) || grepl("^execute:", line)) {
-      skip_until_unindent <- TRUE
-      next
-    }
-    if (skip_until_unindent) {
-      if (grepl("^[^ ]", line) && line != "") {
-        skip_until_unindent <- FALSE
-        keep_lines <- c(keep_lines, line)
-      }
-    } else {
-      keep_lines <- c(keep_lines, line)
-    }
-  }
-
-  new_format <- c(
-    "format:",
-    "  html:",
-    "    toc: true",
-    "    embed-resources: true",
-    "  docx:",
-    "    toc: true",
-    "execute:",
-    "  echo: false",
-    "  warning: false",
-    "  message: false"
-  )
-
-  new_qmd <- c("---", keep_lines, new_format, "---", body_lines)
-  writeLines(new_qmd, qmd_path)
-  log_msg("  YAML patched successfully")
-} else {
+if (has_html && has_docx) {
   log_msg("  Format configuration OK (html + docx)")
+  if (has_ref_doc) {
+    log_msg("  APA reference document configured")
+  }
+} else {
+  log_msg("  WARNING: Missing format configuration")
+  log_msg("  Run 11_assemble_descriptives_qmd.R to regenerate QMD")
 }
 
 # =============================================================================
@@ -157,7 +117,9 @@ html_result <- system2(
 )
 
 html_exit <- attr(html_result, "status")
-if (is.null(html_exit)) html_exit <- 0
+if (is.null(html_exit)) {
+  html_exit <- 0
+}
 
 log_lines <- c(log_lines, "", "--- HTML Render Output ---", html_result)
 
@@ -187,7 +149,9 @@ docx_result <- system2(
 )
 
 docx_exit <- attr(docx_result, "status")
-if (is.null(docx_exit)) docx_exit <- 0
+if (is.null(docx_exit)) {
+  docx_exit <- 0
+}
 
 log_lines <- c(log_lines, "", "--- DOCX Render Output ---", docx_result)
 
@@ -219,8 +183,12 @@ log_msg(glue("  DOCX exists and >0 KB: {docx_valid}"))
 
 log_msg("")
 log_msg("Summary:")
-log_msg(glue("  HTML: {if (html_success && html_valid) 'SUCCESS' else 'FAILED'}"))
-log_msg(glue("  DOCX: {if (docx_success && docx_valid) 'SUCCESS' else 'FAILED'}"))
+log_msg(glue(
+  "  HTML: {if (html_success && html_valid) 'SUCCESS' else 'FAILED'}"
+))
+log_msg(glue(
+  "  DOCX: {if (docx_success && docx_valid) 'SUCCESS' else 'FAILED'}"
+))
 log_msg("")
 log_msg(glue("Completed: {Sys.time()}"))
 
