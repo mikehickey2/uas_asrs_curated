@@ -446,9 +446,11 @@ Several fields contain semicolon-separated multiple values:
 - `events__result`
 - `assessments__contributing_factors_situations`
 - `person1__human_factors`
+- `person2__human_factors`
 - `ac1__flying_in_near_over_uas`
+- `ac2__flying_in_near_over_uas`
 - `ac1__mission`
-- `ac1__flight_phase`
+- `ac2__mission`
 
 **Suggested parsing function:**
 

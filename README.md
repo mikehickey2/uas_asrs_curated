@@ -128,7 +128,7 @@ uas_asrs_curated/
 |----------|-------------|
 | `doc/asrs_data_dictionary.md` | Field definitions for all 125 columns |
 | `doc/asrs_coding_key.pdf` | Official NASA ASRS coding form (April 2024) |
-| `doc/adr/` | Architecture Decision Records |
+| `doc/adr/` | Architecture Decision Records (ADR-001 to ADR-006) |
 
 ## EDA Pipeline Steps
 

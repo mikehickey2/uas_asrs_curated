@@ -5,7 +5,7 @@
 # the constructed dataset schema, analogous to R/asrs_schema.R for raw imports.
 #
 # Usage in pipeline:
-#   - Step 2 (02_constructs.R) produces output/asrs_constructed.rds
+#   - Step 2 (02_constructs.R) produces data/asrs_constructed.rds
 #   - Steps 3-7 read from RDS and depend on these columns
 #   - validate_constructed_schema() can be called after loading RDS to
 #     assert expected structure before downstream analysis
@@ -95,11 +95,11 @@ asrs_airspace_class_levels <- c("A", "B", "C", "D", "E", "G", "Unknown")
 #' For categorical columns with defined levels (phase_simple, airspace_class),
 #' validates that all values are in the allowed set.
 #'
-#' @param df A data frame, typically loaded from output/asrs_constructed.rds
+#' @param df A data frame, typically loaded from data/asrs_constructed.rds
 #' @return invisible(TRUE) if all checks pass
 #' @examples
 #' \dontrun{
-#' asrs <- readRDS("output/asrs_constructed.rds")
+#' asrs <- readRDS("data/asrs_constructed.rds")
 #' validate_constructed_schema(asrs)
 #' }
 validate_constructed_schema <- function(df) {

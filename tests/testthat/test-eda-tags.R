@@ -77,7 +77,7 @@ test_that("to_tags trims whitespace from tags", {
   expect_setequal(result$tag, c("Tag1", "Tag2"))
 })
 
-test_that("to_tags deduplicates same tag appearing multiple times in one report", {
+test_that("to_tags deduplicates same tag appearing multiple times", {
   test_data <- tibble(
     report_id = c("A"),
     tags = c("NMAC; Other; NMAC; NMAC")

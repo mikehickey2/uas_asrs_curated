@@ -6,6 +6,15 @@ validation_result <- function(check, ok, message) {
 }
 
 #' Check column count and required names
+#'
+#' Validates that a data frame has the expected number of columns and
+#' optionally checks that all required column names are present.
+#'
+#' @param df A data frame to validate.
+#' @param expected_count Integer, the expected number of columns.
+#' @param required_names Optional character vector of column names that must
+#'   be present.
+#' @return A tibble with columns `check`, `ok`, and `message`.
 #' @export
 check_column_count <- function(df, expected_count, required_names = NULL) {
   checkmate::assert_data_frame(df)
@@ -31,6 +40,11 @@ check_column_count <- function(df, expected_count, required_names = NULL) {
 }
 
 #' Check ACN uniqueness
+#'
+#' Validates that all values in the `acn` column are unique (no duplicates).
+#'
+#' @param df A data frame containing an `acn` column.
+#' @return A tibble with columns `check`, `ok`, and `message`.
 #' @export
 check_acn_unique <- function(df) {
   checkmate::assert_data_frame(df)
@@ -49,6 +63,13 @@ check_acn_unique <- function(df) {
 }
 
 #' Check entity prefixes
+#'
+#' Validates that all column names (except `acn`) use approved entity prefixes
+#' with double-underscore separator (e.g., `ac1__`, `events__`).
+#'
+#' @param df A data frame to validate.
+#' @param prefixes Character vector of allowed entity prefixes.
+#' @return A tibble with columns `check`, `ok`, and `message`.
 #' @export
 check_entity_prefixes <- function(df, prefixes) {
   checkmate::assert_data_frame(df)
@@ -65,7 +86,16 @@ check_entity_prefixes <- function(df, prefixes) {
   validation_result("entity_prefixes", ok, msg)
 }
 
-#' Check categorical values (handles multi-value splits)
+#' Check categorical values
+#'
+#' Validates that categorical columns contain only allowed values. Handles
+#' semicolon-delimited multi-value fields by splitting and checking each part.
+#'
+#' @param df A data frame to validate.
+#' @param valid_values Named list where names are column names and values are
+#'   character vectors of allowed values.
+#' @return A tibble with columns `check`, `ok`, and `message` (one row per
+#'   column checked).
 #' @export
 check_categorical_values <- function(df, valid_values) {
   checkmate::assert_data_frame(df)
@@ -90,6 +120,15 @@ check_categorical_values <- function(df, valid_values) {
 }
 
 #' Check numeric ranges
+#'
+#' Validates that numeric columns have values within specified bounds.
+#' NA values are ignored.
+#'
+#' @param df A data frame to validate.
+#' @param ranges Named list where names are column names and values are
+#'   two-element lists of (min, max) bounds.
+#' @return A tibble with columns `check`, `ok`, and `message` (one row per
+#'   column checked).
 #' @export
 check_numeric_range <- function(df, ranges) {
   checkmate::assert_data_frame(df)
@@ -115,6 +154,15 @@ check_numeric_range <- function(df, ranges) {
 }
 
 #' Check date range
+#'
+#' Validates that a Date column has values within specified bounds.
+#' NA values are ignored.
+#'
+#' @param df A data frame to validate.
+#' @param column Character string naming the date column to check.
+#' @param min_date Date object for the minimum allowed date.
+#' @param max_date Date object for the maximum allowed date.
+#' @return A tibble with columns `check`, `ok`, and `message`.
 #' @export
 check_date_range <- function(df, column, min_date, max_date) {
   checkmate::assert_data_frame(df)

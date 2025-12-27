@@ -399,3 +399,8 @@ This document was generated from CSV and PNG outputs in `output/`.
 All numeric values in tables are programmatically generated from the
 underlying data to ensure consistency and prevent transcription errors.
 
+```{r}
+#| label: session-info
+#| echo: true
+sessioninfo::session_info()
+```

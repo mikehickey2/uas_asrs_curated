@@ -43,22 +43,24 @@ test_that("EDA scripts do not exceed hard limit (500 lines)", {
     script_name <- basename(script)
 
     if (line_count > hard_limit) {
-      hard_violations <- c(
-        hard_violations,
-        sprintf("%s: %d lines (exceeds hard limit of %d)", script_name, line_count, hard_limit)
+      msg <- sprintf(
+        "%s: %d lines (exceeds hard limit of %d)",
+        script_name, line_count, hard_limit
       )
+      hard_violations <- c(hard_violations, msg)
     } else if (line_count > soft_limit) {
-      soft_violations <- c(
-        soft_violations,
-        sprintf("%s: %d lines (exceeds soft limit of %d)", script_name, line_count, soft_limit)
+      msg <- sprintf(
+        "%s: %d lines (exceeds soft limit of %d)",
+        script_name, line_count, soft_limit
       )
+      soft_violations <- c(soft_violations, msg)
     }
   }
 
   # Informational: report soft limit violations
   if (length(soft_violations) > 0) {
     message(paste0(
-      "Note: Scripts exceeding soft limit (300 lines) - consider refactoring:\n",
+      "Note: Scripts exceeding soft limit (300 lines):\n",
       paste("  ", soft_violations, collapse = "\n")
     ))
   }
@@ -67,7 +69,8 @@ test_that("EDA scripts do not exceed hard limit (500 lines)", {
 
   if (length(hard_violations) > 0) {
     fail(paste0(
-      "Found ", length(hard_violations), " script(s) exceeding hard limit (500 lines).\n",
+      "Found ", length(hard_violations),
+      " script(s) exceeding hard limit (500 lines).\n",
       "Refactor these scripts before merge.\n\n",
       "Violations:\n",
       paste("  ", hard_violations, collapse = "\n")
