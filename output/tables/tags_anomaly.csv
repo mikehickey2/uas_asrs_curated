@@ -1,0 +1,18 @@
+tag,n_reports_with_tag,n_reports_total,n_reports_field_present,pct_of_all_reports,pct_of_reports_with_field_present
+Deviation / Discrepancy - Procedural FAR,42,50,50,84,84
+Deviation / Discrepancy - Procedural Published Material / Policy,42,50,50,84,84
+Airspace Violation All Types,41,50,50,82,82
+Deviation / Discrepancy - Procedural Unauthorized Flight Operations (UAS),41,50,50,82,82
+Conflict NMAC,23,50,50,46,46
+Conflict Airborne Conflict,7,50,50,14,14
+Aircraft Equipment Problem Less Severe,4,50,50,8,8
+Inflight Event / Encounter Loss Of Aircraft Control,2,50,50,4,4
+Inflight Event / Encounter Object,2,50,50,4,4
+No Specific Anomaly Occurred Unwanted Situation,2,50,50,4,4
+ATC Issue All Types,1,50,50,2,2
+Aircraft Equipment Problem Critical,1,50,50,2,2
+Conflict Ground Conflict,1,50,50,2,2
+Critical,1,50,50,2,2
+Inflight Event / Encounter Fly Away (UAS),1,50,50,2,2
+Inflight Event / Encounter Unstabilized Approach,1,50,50,2,2
+Inflight Event / Encounter Weather / Turbulence,1,50,50,2,2

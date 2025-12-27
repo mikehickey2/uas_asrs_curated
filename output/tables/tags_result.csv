@@ -1,0 +1,13 @@
+tag,n_reports_with_tag,n_reports_total,n_reports_field_present,pct_of_all_reports,pct_of_reports_with_field_present
+General None Reported / Taken,29,50,50,58,58
+Flight Crew Took Evasive Action,6,50,50,12,12
+Flight Crew Requested ATC Assistance / Clarification,5,50,50,10,10
+Aircraft Aircraft Damaged,4,50,50,8,8
+Air Traffic Control Provided Assistance,3,50,50,6,6
+Flight Crew Exited Penetrated Airspace,3,50,50,6,6
+Air Traffic Control Issued Advisory / Alert,2,50,50,4,4
+Aircraft Lost Link (UAS),2,50,50,4,4
+Air Traffic Control Issued New Clearance,1,50,50,2,2
+Flight Crew Landed As Precaution,1,50,50,2,2
+Flight Crew Overcame Equipment Problem,1,50,50,2,2
+General Flight Cancelled / Delayed,1,50,50,2,2

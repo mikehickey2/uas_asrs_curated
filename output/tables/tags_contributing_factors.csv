@@ -1,0 +1,10 @@
+tag,n_reports_with_tag,n_reports_total,n_reports_field_present,pct_of_all_reports,pct_of_reports_with_field_present
+Human Factors,46,50,50,92,92
+Software and Automation,9,50,50,18,18
+Procedure,7,50,50,14,14
+Aircraft,6,50,50,12,12
+Environment - Non Weather Related,6,50,50,12,12
+Chart Or Publication,5,50,50,10,10
+Airspace Structure,4,50,50,8,8
+Weather,3,50,50,6,6
+Manuals,1,50,50,2,2

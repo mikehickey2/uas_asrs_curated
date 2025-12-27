@@ -1,0 +1,4 @@
+tag,n_reports_with_tag,n_reports_total,n_reports_field_present,pct_of_all_reports,pct_of_reports_with_field_present
+Human Factors,29,50,50,58,58
+Ambiguous,20,50,50,40,40
+Procedure,1,50,50,2,2
