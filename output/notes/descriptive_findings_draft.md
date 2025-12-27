@@ -56,6 +56,39 @@ The wide confidence intervals reflect the small sample size and should be
 interpreted with caution. These proportions describe this curated sample 
 and should not be generalized to all UAS encounters.
 
+
+## Context of NMAC tags
+
+The following subsections describe how NMAC prevalence varies across operational context variables. See Table 4 and Figures 4-6 for visual representations.
+
+### NMAC by detector
+
+Among reports with detector = Person Flight Crew, NMAC was present in 22 of 29 reports (75.9%, Wilson 95% CI [57.9%, 87.8%]). Among reports with detector = Person UAS Crew, NMAC was present in 1 of 15 reports (6.7%, Wilson 95% CI [1.2%, 29.8%]).
+
+These patterns describe this sample of reports and should not be interpreted as population rates or causal effects.
+
+### NMAC by flight phase
+
+Among reports with flight phase = Arrival, NMAC was present in 14 of 23 reports (60.9%, Wilson 95% CI [40.8%, 77.8%]). Among reports with flight phase = Enroute, NMAC was present in 6 of 13 reports (46.2%, Wilson 95% CI [23.2%, 70.9%]). Among reports with flight phase = Departure, NMAC was present in 2 of 9 reports (22.2%, Wilson 95% CI [6.3%, 54.7%]).
+
+These patterns describe this sample of reports and should not be interpreted as population rates or causal effects.
+
+### NMAC by time of day
+
+Among reports with time block = 0601-1200, NMAC was present in 5 of 14 reports (35.7%, Wilson 95% CI [16.3%, 61.2%]). Among reports with time block = 1201-1800, NMAC was present in 9 of 21 reports (42.9%, Wilson 95% CI [24.5%, 63.5%]). Among reports with time block = 1801-2400, NMAC was present in 5 of 8 reports (62.5%, Wilson 95% CI [30.6%, 86.3%]).
+
+These patterns describe this sample of reports and should not be interpreted as population rates or causal effects.
+
+### Summary observations
+
+- **Detector separation**: In this sample, NMAC tags were more frequent in reports detected by flight crew than by UAS crew (see denominators above).
+
+- **Phase patterns**: NMAC tags were most common in Arrival in this sample; intervals overlapped across phases.
+
+- **Time of day**: Time-block comparisons are exploratory with wide intervals.
+
+- **Data notes**: Unknown indicates missing/not reported; groups with n < 5 were excluded from plots but remain in Table 4.
+
 ## Dominant event and contributing-factor themes
 
 ### Top anomaly tags
