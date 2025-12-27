@@ -241,7 +241,7 @@ Secondary reporter (if multiple reports combined).
 ## Derived Analytical Columns
 
 These columns are created in EDA Step 2 (`scripts/eda/02_constructs.R`) and are present
-in `output/asrs_constructed.rds`. They are not part of the raw ASRS export but are
+in `data/asrs_constructed.rds`. They are not part of the raw ASRS export but are
 derived from source columns for analytical convenience. The schema definition is
 maintained in `R/asrs_constructs_schema.R`.
 

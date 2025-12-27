@@ -16,11 +16,8 @@ sample.
 ## Installation
 
 ```bash
-# Clone repository
 git clone https://github.com/mikehickey2/uas_asrs_curated.git
 cd uas_asrs_curated
-
-# Restore R environment
 Rscript -e "renv::restore()"
 ```
 
@@ -31,111 +28,114 @@ Rscript -e "renv::restore()"
 
 ## Usage
 
+All commands assume execution from the repository root.
+
 ### Import Pipeline
 
-```r
-# Import and clean data
-source("scripts/import_data.R")
+The curated CSV is already present in the repository. To re-import from raw:
 
-# Validate imported data
-source("R/validate_asrs.R")
-validate_asrs(asrs_uas_reports)
+```bash
+Rscript scripts/import_data.R
 ```
 
-Output is written to `output/asrs_uas_reports_clean.csv`.
+This reads `data/asrs_curated_drone_reports.csv` (`PATHS$raw_csv`) and writes
+`data/asrs_uas_reports_clean.csv` (`PATHS$curated_csv`).
 
 ### EDA Pipeline
 
+The pipeline reads from the curated CSV, derives analytical columns (written to
+`data/asrs_constructed.rds`), and generates outputs in `output/`.
+
 ```bash
-# Run full 12-step EDA pipeline
+# Run full 12-step pipeline
 Rscript scripts/eda/00_run_all.R
 
-# Run specific steps (e.g., steps 10-12)
-Rscript scripts/eda/00_run_all.R --from 10 --to 12
+# Smoke test (lint + tests before running)
+Rscript scripts/eda/00_run_all.R --smoke
+
+# Run specific steps
+Rscript scripts/eda/00_run_all.R --from 1 --to 3 --no-render
 
 # List all pipeline steps
 Rscript scripts/eda/00_run_all.R --list
-
-# Run with lint + tests first
-Rscript scripts/eda/00_run_all.R --smoke
 ```
 
-Outputs are written to `output/reports/`, `output/tables/`, and
-`output/figures/`.
+**CLI flags:** `--list`, `--from`, `--to`, `--smoke`, `--no-render`
 
-### Testing
+Outputs are written to `output/reports/`, `output/tables/`, `output/figures/`,
+and `output/notes/`.
+
+### Quality Gates
 
 ```bash
-# Run all tests
-Rscript -e "testthat::test_dir('tests/testthat')"
-
-# Lint R files
-Rscript -e "lintr::lint_dir('R')"
+Rscript scripts/dev/01_lint.R           # Lint check
+Rscript scripts/dev/02_test.R           # Run tests (219 tests)
+Rscript scripts/eda/00_run_all.R --smoke  # Full smoke test
 ```
+
+## Path Constants
+
+`R/paths.R` is the single source of truth for all data and output paths.
+See [ADR-006](doc/adr/ADR-006-data-product-location.md) for rationale.
+
+| Constant | Path |
+|----------|------|
+| `PATHS$raw_csv` | `data/asrs_curated_drone_reports.csv` |
+| `PATHS$curated_csv` | `data/asrs_uas_reports_clean.csv` |
+| `PATHS$constructed_rds` | `data/asrs_constructed.rds` |
+| `PATHS$output_*` | `output/tables/`, `output/figures/`, etc. |
+
+Scripts must `source("R/paths.R")` and use `PATHS$...` constants.
 
 ## Project Structure
 
 ```
 uas_asrs_curated/
-├── R/                      # Functions and utilities
-│   ├── asrs_schema.R       # Column definitions, types, valid values
-│   ├── import_asrs.R       # Pure import function
-│   ├── validate_asrs.R     # Validation function
-│   ├── validation_helpers.R
-│   └── apa_tables.R        # APA-formatted flextable output
+├── R/                          # Functions and utilities
+│   ├── paths.R                 # Path constants (single source of truth)
+│   ├── asrs_schema.R           # Column definitions, types, valid values
+│   ├── asrs_constructs_schema.R # Schema for 11 derived analytical columns
+│   ├── construct_helpers.R     # Helpers for deriving analytical columns
+│   ├── import_asrs.R           # Pure import function
+│   ├── validate_asrs.R         # Validation function
+│   └── apa_tables.R            # APA-formatted flextable output
 ├── scripts/
-│   ├── import_data.R       # Import wrapper
-│   ├── dev/                # Development tools (lint, test runners)
-│   └── eda/                # 12-step EDA pipeline
-│       ├── 00_run_all.R    # Pipeline orchestrator
-│       ├── 01_audit.R      # Data audit and completeness
-│       ├── 02_constructs.R # Derived variables
-│       ├── ...             # Steps 03-11
-│       └── 12_render_descriptives.R
-├── tests/testthat/         # Test suite (150+ tests)
-├── data/                   # Raw ASRS CSV exports
+│   ├── import_data.R           # Import wrapper
+│   ├── dev/                    # Development tools (lint, test runners)
+│   └── eda/                    # EDA pipeline
+│       ├── 00_run_all.R        # Pipeline orchestrator (runs steps 01-12)
+│       ├── 01_audit.R          # Data audit and completeness
+│       ├── 02_constructs.R     # Derived variables
+│       ├── 03-12_*.R           # Remaining pipeline steps
+│       └── 13_create_apa_reference.R  # One-time helper (not a pipeline step)
+├── tests/testthat/             # Test suite (219 tests)
+├── data/                       # Data products (per ADR-006)
+│   ├── asrs_curated_drone_reports.csv  # Raw ASRS export
+│   ├── asrs_uas_reports_clean.csv      # Curated dataset (125 columns)
+│   └── asrs_constructed.rds            # With derived columns (136 columns)
 ├── output/
-│   ├── reports/            # HTML and DOCX reports
-│   ├── tables/             # CSV tables
-│   └── figures/            # PNG figures
-├── assets/                 # APA reference document
-└── doc/                    # Documentation
+│   ├── reports/                # HTML and DOCX reports
+│   ├── tables/                 # CSV tables
+│   ├── figures/                # PNG figures
+│   └── notes/                  # Markdown drafts and manifests
+├── assets/                     # Static inputs (APA reference document)
+└── doc/                        # Documentation and ADRs
 ```
 
 ## Documentation
 
-The `doc/` directory contains reference materials:
-
 | Document | Description |
 |----------|-------------|
-| `asrs_data_dictionary.md` | Complete field definitions, data types, and valid values for all 125 columns |
-| `asrs_coding_key.pdf` | Official NASA ASRS coding form with field definitions (April 2024) |
-| `asrs_curated_uas_reports.pdf` | Human-readable version of the 50 curated UAS reports |
+| `doc/asrs_data_dictionary.md` | Field definitions for all 125 columns |
+| `doc/asrs_coding_key.pdf` | Official NASA ASRS coding form (April 2024) |
+| `doc/adr/` | Architecture Decision Records |
 
-## Data
-
-The current dataset contains **50 UAS encounter reports** curated by NASA ASRS
-staff specifically for UAS research. These reports are included in the
-repository.
-
-For additional ASRS data:
-
-1. Visit [ASRS Database Online](https://asrs.arc.nasa.gov/search/database.html)
-2. Query and export as CSV
-3. Place in `data/` and run the import pipeline
-
-The import tools handle the standard ASRS CSV export format and are designed
-to scale to larger datasets.
-
-## Exploratory Data Analysis
-
-The `scripts/eda/` directory contains a 12-step pipeline that produces
-publication-ready descriptive analysis outputs:
+## EDA Pipeline Steps
 
 | Step | Script | Output |
 |------|--------|--------|
 | 1 | `01_audit.R` | Data completeness audit |
-| 2 | `02_constructs.R` | Derived variables (phase, time block, detector) |
+| 2 | `02_constructs.R` | Derived variables (phase, time block, flags) |
 | 3 | `03_tags.R` | Tag analysis with co-occurrence pairs |
 | 4 | `04_tables_descriptives.R` | Tables 1-3 (overview, context, severity) |
 | 5 | `05_figures_story.R` | Figures 1-3 (detection, markers, tags) |
@@ -146,12 +146,9 @@ publication-ready descriptive analysis outputs:
 | 11 | `11_assemble_descriptives_qmd.R` | Assemble Quarto document |
 | 12 | `12_render_descriptives.R` | Render HTML + DOCX reports |
 
-### Key Features
-
-- **Wilson confidence intervals** for binomial proportions
-- **APA-formatted tables** via flextable for Word output
-- **Fail-loud error handling** with native stack traces
-- **Denominator transparency** in all tables and figures
+`13_create_apa_reference.R` is a one-time helper that generates
+`assets/apa_reference.docx` if missing; it runs automatically during preflight
+when needed.
 
 ### Output Files
 
@@ -162,15 +159,21 @@ publication-ready descriptive analysis outputs:
 
 ---
 
+## Data
+
+The dataset contains **50 UAS encounter reports** curated by NASA ASRS staff.
+
+For additional ASRS data, visit
+[ASRS Database Online](https://asrs.arc.nasa.gov/search/database.html),
+export as CSV, place in `data/`, and run the import pipeline.
+
+---
+
 ## Citation
-
 If you use this software or data in academic work, please cite:
-
 > Hickey, M. J. (2025). *uas_asrs_curated: Import and validation tools for
 > NASA ASRS UAS incident reports* (Version 1.0) [Computer software].
 > https://github.com/mikehickey2/uas_asrs_curated
-
-### BibTeX
 
 ```bibtex
 @software{hickey2025uasasrs,
@@ -187,45 +190,24 @@ If you use this software or data in academic work, please cite:
 
 ## Acknowledgments
 
-### NASA Aviation Safety Reporting System
-
 This project uses data from the [NASA Aviation Safety Reporting System
 (ASRS)](https://asrs.arc.nasa.gov/), a confidential voluntary safety reporting
-program administered by NASA under agreement with the Federal Aviation
-Administration (FAA). The ASRS has collected aviation safety incident reports
-from pilots, controllers, and other aviation professionals since 1976.
+program administered by NASA under agreement with the FAA.
 
-The 50 UAS encounter reports in this repository were curated by ASRS staff for
-UAS research purposes.
-
-> The ASRS collects, analyzes, and responds to voluntarily submitted aviation
-> safety incident reports in order to lessen the likelihood of aviation
-> accidents.
-
-ASRS data and reports: https://asrs.arc.nasa.gov/
-
-### Schema Design
-
-The column naming convention (entity prefixes with double underscore separator,
-e.g., `ac1__make_model_name`) was adapted from the
-[qge/ASRS](https://github.com/qge/ASRS) repository. This pattern solves the
-duplicate column name problem in ASRS exports and enables programmatic access
-by entity (Aircraft 1, Aircraft 2, Person 1, etc.).
+The column naming convention (entity prefixes with `__` separator) was adapted
+from the [qge/ASRS](https://github.com/qge/ASRS) repository.
 
 ---
 
 ## Author
 
-**Michael J. Hickey**  
-ORCID: [0009-0009-1402-1228](https://orcid.org/0009-0009-1402-1228)  
-Email: [michael.j.hickey@und.edu](mailto:michael.j.hickey@und.edu)  
-LinkedIn: [michael-hickey-mba](https://www.linkedin.com/in/michael-hickey-mba/)  
+**Michael J. Hickey**
+ORCID: [0009-0009-1402-1228](https://orcid.org/0009-0009-1402-1228)
+Email: [michael.j.hickey@und.edu](mailto:michael.j.hickey@und.edu)
 GitHub: [mikehickey2](https://github.com/mikehickey2)
 
 ## License
 
-This project is licensed under the [PolyForm Noncommercial License
-1.0.0](LICENSE.md). Commercial use is prohibited without written permission.
-
-Academic and research use is permitted. See LICENSE.md for full terms and
-citation requirements.
+[PolyForm Noncommercial License 1.0.0](LICENSE.md). Academic and research use
+permitted. See LICENSE.md for full terms and [CONTRIBUTING.md](CONTRIBUTING.md)
+for contribution guidelines.
