@@ -1,0 +1,4 @@
+marker,definition,n_total,n_available,x_yes,p_hat,ci_low,ci_high
+NMAC,NMAC tag present in events__anomaly,50,50,23,0.46,0.33,0.596
+Evasive action,Evasive Action in events__result,50,50,6,0.12,0.056,0.238
+ATC assistance,ATC Assistance or Clarification in events__result,50,50,5,0.1,0.043,0.214
