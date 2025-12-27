@@ -41,7 +41,7 @@ format_nmac_sentence <- function(row, context_label) {
 # =============================================================================
 
 detector_data <- table4 |>
- filter(context_var == "events__detector", plot_included) |>
+  filter(context_var == "events__detector", plot_included) |>
   arrange(desc(p_hat))
 
 detector_sentences <- character()

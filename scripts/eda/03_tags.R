@@ -35,7 +35,7 @@ to_tags <- function(data, id_col, tag_col) {
 }
 
 tag_fields <- c(
- "events__anomaly",
+  "events__anomaly",
   "events__result",
   "assessments__contributing_factors_situations",
   "assessments__primary_problem"

@@ -16,7 +16,7 @@ dir.create("output/notes", showWarnings = FALSE, recursive = TRUE)
 asrs <- readRDS("output/asrs_constructed.rds")
 overview <- read_csv("output/tables/overview.csv", show_col_types = FALSE)
 missingness_domain <- read_csv(
- "output/tables/missingness_by_domain.csv",
+  "output/tables/missingness_by_domain.csv",
   show_col_types = FALSE
 )
 missingness_var <- read_csv(
@@ -109,7 +109,7 @@ cat("Written: table1_overview_completeness.csv\n")
 
 context_vars <- c(
   "time_block", "phase_simple", "airspace_class",
- "environment__light", "environment__flight_conditions",
+  "environment__light", "environment__flight_conditions",
   "events__detector", "reporter_org"
 )
 context_vars <- context_vars[context_vars %in% names(asrs)]

@@ -15,7 +15,7 @@ changelog_path <- "output/notes/descriptive_findings_change_log.md"
 draft_text <- paste(readLines(draft_path), collapse = "\n")
 
 caution <- paste0(
- "These patterns describe this sample of reports and should not be ",
+  "These patterns describe this sample of reports and should not be ",
   "interpreted as population rates or causal effects."
 )
 
@@ -101,7 +101,7 @@ time_sentences <- vapply(
 
 time_section <- c(
   "### NMAC by time of day",
- "",
+  "",
   paste(time_sentences, collapse = " "),
   "",
   caution
@@ -188,7 +188,7 @@ changelog_entry <- c(
   "",
   "---",
   "",
- glue("### Rewrite: Context of NMAC tags section"),
+  glue("### Rewrite: Context of NMAC tags section"),
   "",
   glue("- **Date/time**: {timestamp}"),
   paste0(

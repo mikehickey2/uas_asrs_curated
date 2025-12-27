@@ -15,33 +15,33 @@ dir.create("output/notes", showWarnings = FALSE, recursive = TRUE)
 # =============================================================================
 
 tables <- tribble(
-  ~number, ~id,       ~filename,                          ~title,
-  "1",     "table1",  "table1_overview_completeness.csv",
-           "Dataset overview and completeness",
-  "2",     "table2",  "table2_operational_context.csv",
-           "Operational context of encounters",
-  "2a",    "table2a", "table2_optional_crosstabs.csv",
-           "Optional cross-tabulations (detector by phase; reporter by time)",
-  "3",     "table3",  "table3_severity_markers.csv",
-           "Safety significance markers with Wilson 95% intervals",
-  "4",     "table4",  "table4_nmac_by_context.csv",
-           "NMAC prevalence by operational context with Wilson 95% intervals"
+  ~number, ~id, ~filename, ~title,
+  "1", "table1", "table1_overview_completeness.csv",
+  "Dataset overview and completeness",
+  "2", "table2", "table2_operational_context.csv",
+  "Operational context of encounters",
+  "2a", "table2a", "table2_optional_crosstabs.csv",
+  "Optional cross-tabulations (detector by phase; reporter by time)",
+  "3", "table3", "table3_severity_markers.csv",
+  "Safety significance markers with Wilson 95% intervals",
+  "4", "table4", "table4_nmac_by_context.csv",
+  "NMAC prevalence by operational context with Wilson 95% intervals"
 )
 
 figures <- tribble(
-  ~number, ~id,    ~filename,                        ~title,
-  "1",     "fig1", "fig1_detector_by_phase.png",
-           "Event detection by flight phase",
-  "2",     "fig2", "fig2_severity_markers_ci.png",
-           "Severity marker prevalence with Wilson 95% intervals",
-  "3",     "fig3", "fig3_top_tags.png",
-           "Dominant tags in UAS encounter reports",
-  "4",     "fig4", "fig4_nmac_by_phase_ci.png",
-           "NMAC prevalence by flight phase with Wilson 95% intervals",
-  "5",     "fig5", "fig5_nmac_by_detector_ci.png",
-           "NMAC prevalence by detector with Wilson 95% intervals",
-  "6",     "fig6", "fig6_nmac_by_timeblock_ci.png",
-           "NMAC prevalence by time of day with Wilson 95% intervals"
+  ~number, ~id, ~filename, ~title,
+  "1", "fig1", "fig1_detector_by_phase.png",
+  "Event detection by flight phase",
+  "2", "fig2", "fig2_severity_markers_ci.png",
+  "Severity marker prevalence with Wilson 95% intervals",
+  "3", "fig3", "fig3_top_tags.png",
+  "Dominant tags in UAS encounter reports",
+  "4", "fig4", "fig4_nmac_by_phase_ci.png",
+  "NMAC prevalence by flight phase with Wilson 95% intervals",
+  "5", "fig5", "fig5_nmac_by_detector_ci.png",
+  "NMAC prevalence by detector with Wilson 95% intervals",
+  "6", "fig6", "fig6_nmac_by_timeblock_ci.png",
+  "NMAC prevalence by time of day with Wilson 95% intervals"
 )
 
 # =============================================================================
@@ -66,7 +66,7 @@ table_manifest <- tables |>
     type = "Table",
     path = paste0("output/tables/", filename)
   ) |>
- rowwise() |>
+  rowwise() |>
   mutate(
     info = list(get_file_info(path)),
     exists = info$exists,
@@ -207,7 +207,7 @@ inventory_lines <- c(
   "",
   glue("*Generated: {Sys.Date()}*"),
   "",
- "This document provides standardized titles, captions, and denominator",
+  "This document provides standardized titles, captions, and denominator",
   "notes for all tables and figures produced by the exploratory data analysis.",
   "",
   "---",

@@ -33,7 +33,7 @@ n_total <- nrow(asrs)
 # =============================================================================
 
 n_detector_available <- sum(
- !is.na(asrs$events__detector) & asrs$events__detector != ""
+  !is.na(asrs$events__detector) & asrs$events__detector != ""
 )
 n_phase_available <- sum(asrs$phase_simple != "Unknown")
 
@@ -215,10 +215,15 @@ panel_b <- ggplot(top_cf, aes(x = n_reports_with_tag, y = tag_wrap)) +
     axis.text.y = element_text(size = 8, lineheight = 0.9)
   )
 
+fig3_subtitle <- paste0(
+  "Counts reflect report-level presence of tags ",
+  "(a tag appearing multiple times in one report counts once)"
+)
+
 fig3 <- panel_a / panel_b +
   plot_annotation(
     title = "Dominant Tags in UAS Encounter Reports",
-    subtitle = "Counts reflect report-level presence of tags (a tag appearing multiple times in one report counts once)",
+    subtitle = fig3_subtitle,
     theme = theme(
       plot.title = element_text(size = 12, face = "bold"),
       plot.subtitle = element_text(size = 9, color = "gray40")
@@ -256,7 +261,7 @@ notes_content <- c(
   "- **Key finding**: The distribution shows which detection sources and flight",
   "  phases are most represented in this curated sample. Counts are small and",
   "  should not be interpreted as population rates.",
- "",
+  "",
   "---",
   "",
   "## Figure 2: Severity Marker Prevalence",

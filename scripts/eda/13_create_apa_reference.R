@@ -8,23 +8,23 @@ output_path <- "assets/apa_reference.docx"
 doc <- read_docx()
 
 doc <- body_set_default_section(
- doc,
- value = prop_section(
-   page_size = page_size(
-     width = 8.5,
-     height = 11,
-     orient = "portrait"
-   ),
-   page_margins = page_mar(
-     bottom = 1,
-     top = 1,
-     right = 1,
-     left = 1,
-     header = 0.5,
-     footer = 0.5,
-     gutter = 0
-   )
- )
+  doc,
+  value = prop_section(
+    page_size = page_size(
+      width = 8.5,
+      height = 11,
+      orient = "portrait"
+    ),
+    page_margins = page_mar(
+      bottom = 1,
+      top = 1,
+      right = 1,
+      left = 1,
+      header = 0.5,
+      footer = 0.5,
+      gutter = 0
+    )
+  )
 )
 
 normal_props <- fp_text(

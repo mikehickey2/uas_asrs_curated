@@ -132,8 +132,9 @@ for (spec in fig_specs) {
 
   }
 
-  fig <- plot_nmac_by_context(table4, spec$var, spec$title,
-                               make_subtitle(spec$label))
+  fig <- plot_nmac_by_context(
+    table4, spec$var, spec$title, make_subtitle(spec$label)
+  )
   ggsave(paste0("output/figures/", spec$file), fig,
          width = 7, height = 4, dpi = 300)
   cat("Written:", spec$file, "\n")
