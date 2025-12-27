@@ -1,9 +1,9 @@
 Render Log
 ===========
-Started: 2025-12-27 01:39:02.009055
+Started: 2025-12-27 01:45:36.623151
 
 Preflight checks:
-  Quarto found: /Applications/quarto/bin/quarto
+  Quarto found: /usr/local/bin/quarto
   QMD exists: scripts/eda/01_descriptive_analysis.qmd
   All 11 assets verified
 
@@ -107,4 +107,4 @@ Summary:
   HTML: SUCCESS
   DOCX: SUCCESS
 
-Completed: 2025-12-27 01:39:12.743842
+Completed: 2025-12-27 01:45:46.656935

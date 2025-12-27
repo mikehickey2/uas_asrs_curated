@@ -389,7 +389,7 @@ dominant tags, and NMAC prevalence across operational context.
 
 This document was generated from CSV and PNG outputs in `output/`.
 
-**Assembly timestamp**: 2025-12-27 01:39:01
+**Assembly timestamp**: 2025-12-27 01:45:36
 
 **Source scripts**:
 
