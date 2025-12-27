@@ -1,0 +1,32 @@
+field,n_total,n_available,pct_available
+month,50,50,100
+time_block,50,46,92
+reporter_org,50,49,98
+phase_raw,50,48,96
+phase_simple,50,47,94
+airspace_class,50,30,60
+flag_nmac,50,23,46
+flag_evasive,50,6,12
+flag_atc,50,5,10
+miss_horizontal_ft,50,15,30
+miss_vertical_ft,50,15,30
+--- phase_simple breakdown ---,NA,NA,NA
+  Arrival,50,23,46
+  Departure,50,9,18
+  Enroute,50,13,26
+  Surface,50,2,4
+  Unknown,50,3,6
+--- airspace_class breakdown ---,NA,NA,NA
+  A,50,1,2
+  B,50,13,26
+  C,50,5,10
+  D,50,7,14
+  E,50,3,6
+  G,50,1,2
+  Unknown,50,20,40
+--- time_block breakdown ---,NA,NA,NA
+  0001-0600,50,3,6
+  0601-1200,50,14,28
+  1201-1800,50,21,42
+  1801-2400,50,8,16
+  (NA),50,4,8
