@@ -3,7 +3,9 @@
 
 library(officer)
 
-output_path <- "assets/apa_reference.docx"
+source("R/paths.R")
+
+output_path <- PATHS$apa_reference_doc
 
 doc <- read_docx()
 

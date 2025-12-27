@@ -7,14 +7,16 @@ library(stringr)
 library(glue)
 library(fs)
 
+source("R/paths.R")
+
 qmd_path <- "scripts/eda/01_descriptive_analysis.qmd"
 
 # =============================================================================
 # Read inputs
 # =============================================================================
 
-narrative <- readLines("output/notes/descriptive_findings_draft.md")
-inventory <- readLines("output/notes/apa_inventory.md")
+narrative <- readLines(file.path(PATHS$output_notes, "descriptive_findings_draft.md"))
+inventory <- readLines(file.path(PATHS$output_notes, "apa_inventory.md"))
 
 # =============================================================================
 # Parse inventory into lookup
@@ -199,11 +201,11 @@ qmd_lines <- c(
 
 table_order <- c("table1", "table2", "table2a", "table3", "table4")
 table_paths <- c(
-  table1 = "output/tables/table1_overview_completeness.csv",
-  table2 = "output/tables/table2_operational_context.csv",
-  table2a = "output/tables/table2_optional_crosstabs.csv",
-  table3 = "output/tables/table3_severity_markers.csv",
-  table4 = "output/tables/table4_nmac_by_context.csv"
+  table1 = file.path(PATHS$output_tables, "table1_overview_completeness.csv"),
+  table2 = file.path(PATHS$output_tables, "table2_operational_context.csv"),
+  table2a = file.path(PATHS$output_tables, "table2_optional_crosstabs.csv"),
+  table3 = file.path(PATHS$output_tables, "table3_severity_markers.csv"),
+  table4 = file.path(PATHS$output_tables, "table4_nmac_by_context.csv")
 )
 
 for (tid in table_order) {
@@ -231,12 +233,12 @@ figure_order <- c(
   "figure1", "figure2", "figure3", "figure4", "figure5", "figure6"
 )
 figure_paths <- c(
-  figure1 = "output/figures/fig1_detector_by_phase.png",
-  figure2 = "output/figures/fig2_severity_markers_ci.png",
-  figure3 = "output/figures/fig3_top_tags.png",
-  figure4 = "output/figures/fig4_nmac_by_phase_ci.png",
-  figure5 = "output/figures/fig5_nmac_by_detector_ci.png",
-  figure6 = "output/figures/fig6_nmac_by_timeblock_ci.png"
+  figure1 = file.path(PATHS$output_figures, "fig1_detector_by_phase.png"),
+  figure2 = file.path(PATHS$output_figures, "fig2_severity_markers_ci.png"),
+  figure3 = file.path(PATHS$output_figures, "fig3_top_tags.png"),
+  figure4 = file.path(PATHS$output_figures, "fig4_nmac_by_phase_ci.png"),
+  figure5 = file.path(PATHS$output_figures, "fig5_nmac_by_detector_ci.png"),
+  figure6 = file.path(PATHS$output_figures, "fig6_nmac_by_timeblock_ci.png")
 )
 
 for (fid in figure_order) {

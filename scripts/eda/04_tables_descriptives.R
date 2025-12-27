@@ -12,17 +12,17 @@ library(binom)
 
 source("R/paths.R")
 
-dir.create("output/tables", showWarnings = FALSE, recursive = TRUE)
-dir.create("output/notes", showWarnings = FALSE, recursive = TRUE)
+dir.create(PATHS$output_tables, showWarnings = FALSE, recursive = TRUE)
+dir.create(PATHS$output_notes, showWarnings = FALSE, recursive = TRUE)
 
 asrs <- readRDS(PATHS$constructed_rds)
-overview <- read_csv("output/tables/overview.csv", show_col_types = FALSE)
+overview <- read_csv(file.path(PATHS$output_tables, "overview.csv"), show_col_types = FALSE)
 missingness_domain <- read_csv(
-  "output/tables/missingness_by_domain.csv",
+  file.path(PATHS$output_tables, "missingness_by_domain.csv"),
   show_col_types = FALSE
 )
 missingness_var <- read_csv(
-  "output/tables/missingness_by_variable.csv",
+  file.path(PATHS$output_tables, "missingness_by_variable.csv"),
   show_col_types = FALSE
 )
 
@@ -102,7 +102,7 @@ section_c <- tibble(
   select(section, item, value, n_total, n_available, notes)
 
 table1 <- bind_rows(section_a, section_b, section_c)
-write_csv(table1, "output/tables/table1_overview_completeness.csv")
+write_csv(table1, file.path(PATHS$output_tables, "table1_overview_completeness.csv"))
 cat("Written: table1_overview_completeness.csv\n")
 
 # =============================================================================
@@ -141,7 +141,7 @@ build_freq_table <- function(data, var_name, n_total) {
 }
 
 table2 <- map_dfr(context_vars, ~ build_freq_table(asrs, .x, n_total))
-write_csv(table2, "output/tables/table2_operational_context.csv")
+write_csv(table2, file.path(PATHS$output_tables, "table2_operational_context.csv"))
 cat("Written: table2_operational_context.csv\n")
 
 # =============================================================================
@@ -242,7 +242,7 @@ if (length(crosstabs) > 0) {
   )
 }
 
-write_csv(table2_crosstabs, "output/tables/table2_optional_crosstabs.csv")
+write_csv(table2_crosstabs, file.path(PATHS$output_tables, "table2_optional_crosstabs.csv"))
 cat("Written: table2_optional_crosstabs.csv\n")
 
 # =============================================================================
@@ -296,7 +296,7 @@ table3 <- bind_rows(
   )
 )
 
-write_csv(table3, "output/tables/table3_severity_markers.csv")
+write_csv(table3, file.path(PATHS$output_tables, "table3_severity_markers.csv"))
 cat("Written: table3_severity_markers.csv\n")
 
 # =============================================================================
@@ -341,12 +341,12 @@ if (length(crosstab_notes) > 0) {
   )
 }
 
-writeLines(notes_content, "output/notes/descriptive_table_notes.md")
+writeLines(notes_content, file.path(PATHS$output_notes, "descriptive_table_notes.md"))
 cat("Written: descriptive_table_notes.md\n")
 
 cat("\nDescriptive tables complete. Outputs:\n")
-cat("  - output/tables/table1_overview_completeness.csv\n")
-cat("  - output/tables/table2_operational_context.csv\n")
-cat("  - output/tables/table2_optional_crosstabs.csv\n")
-cat("  - output/tables/table3_severity_markers.csv\n")
-cat("  - output/notes/descriptive_table_notes.md\n")
+cat("  -", file.path(PATHS$output_tables, "table1_overview_completeness.csv"), "\n")
+cat("  -", file.path(PATHS$output_tables, "table2_operational_context.csv"), "\n")
+cat("  -", file.path(PATHS$output_tables, "table2_optional_crosstabs.csv"), "\n")
+cat("  -", file.path(PATHS$output_tables, "table3_severity_markers.csv"), "\n")
+cat("  -", file.path(PATHS$output_notes, "descriptive_table_notes.md"), "\n")

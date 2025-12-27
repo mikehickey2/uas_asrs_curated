@@ -8,7 +8,7 @@ library(readr)
 
 source("R/paths.R")
 
-dir.create("output/tables", showWarnings = FALSE, recursive = TRUE)
+dir.create(PATHS$output_tables, showWarnings = FALSE, recursive = TRUE)
 
 asrs <- readRDS(PATHS$constructed_rds)
 
@@ -54,7 +54,7 @@ field_availability <- tibble(
   pct_field_present = round(n_reports_field_present / n_reports_total * 100, 1)
 )
 
-write_csv(field_availability, "output/tables/tag_field_availability_summary.csv")
+write_csv(field_availability, file.path(PATHS$output_tables, "tag_field_availability_summary.csv"))
 
 build_tag_summary <- function(data, id_col, tag_col, n_total) {
   n_field_present <- sum(!is.na(data[[tag_col]]) & data[[tag_col]] != "")
@@ -95,13 +95,13 @@ build_tag_summary <- function(data, id_col, tag_col, n_total) {
 
 if ("events__anomaly" %in% tag_fields) {
   tags_anomaly <- build_tag_summary(asrs, id_col, "events__anomaly", n_total)
-  write_csv(tags_anomaly, "output/tables/tags_anomaly.csv")
+  write_csv(tags_anomaly, file.path(PATHS$output_tables, "tags_anomaly.csv"))
   cat("Written: tags_anomaly.csv (", nrow(tags_anomaly), " unique tags)\n", sep = "")
 }
 
 if ("events__result" %in% tag_fields) {
   tags_result <- build_tag_summary(asrs, id_col, "events__result", n_total)
-  write_csv(tags_result, "output/tables/tags_result.csv")
+  write_csv(tags_result, file.path(PATHS$output_tables, "tags_result.csv"))
   cat("Written: tags_result.csv (", nrow(tags_result), " unique tags)\n", sep = "")
 }
 
@@ -111,7 +111,7 @@ if ("assessments__contributing_factors_situations" %in% tag_fields) {
     "assessments__contributing_factors_situations",
     n_total
   )
-  write_csv(tags_cf, "output/tables/tags_contributing_factors.csv")
+  write_csv(tags_cf, file.path(PATHS$output_tables, "tags_contributing_factors.csv"))
   cat("Written: tags_contributing_factors.csv (", nrow(tags_cf),
       " unique tags)\n", sep = "")
 }
@@ -122,7 +122,7 @@ if ("assessments__primary_problem" %in% tag_fields) {
     "assessments__primary_problem",
     n_total
   )
-  write_csv(tags_pp, "output/tables/tags_primary_problem.csv")
+  write_csv(tags_pp, file.path(PATHS$output_tables, "tags_primary_problem.csv"))
   cat("Written: tags_primary_problem.csv (", nrow(tags_pp),
       " unique tags)\n", sep = "")
 }
@@ -137,7 +137,7 @@ if (cf_col %in% names(asrs)) {
     write_csv(
       tibble(tag1 = character(), tag2 = character(),
              n_reports = integer(), pct_of_all_reports = numeric()),
-      "output/tables/contrib_factor_pairs_top20.csv"
+      file.path(PATHS$output_tables, "contrib_factor_pairs_top20.csv")
     )
   } else {
     pairs <- cf_long |>
@@ -149,7 +149,7 @@ if (cf_col %in% names(asrs)) {
       arrange(desc(n_reports)) |>
       slice_head(n = 20)
 
-    write_csv(pairs, "output/tables/contrib_factor_pairs_top20.csv")
+    write_csv(pairs, file.path(PATHS$output_tables, "contrib_factor_pairs_top20.csv"))
     cat("Written: contrib_factor_pairs_top20.csv (",
         nrow(pairs), " pairs)\n", sep = "")
   }
@@ -158,11 +158,11 @@ if (cf_col %in% names(asrs)) {
   write_csv(
     tibble(tag1 = character(), tag2 = character(),
            n_reports = integer(), pct_of_all_reports = numeric()),
-    "output/tables/contrib_factor_pairs_top20.csv"
+    file.path(PATHS$output_tables, "contrib_factor_pairs_top20.csv")
   )
 }
 
-cat("\nTag analysis complete. Outputs written to output/tables/\n")
+cat("\nTag analysis complete. Outputs written to", PATHS$output_tables, "\n")
 cat("  - tag_field_availability_summary.csv\n")
 cat("  - tags_anomaly.csv\n")
 cat("  - tags_result.csv\n")

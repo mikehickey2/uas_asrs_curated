@@ -6,9 +6,11 @@ library(dplyr)
 library(fs)
 library(glue)
 
+source("R/paths.R")
+
 qmd_path <- "scripts/eda/01_descriptive_analysis.qmd"
-manifest_path <- "output/notes/assets_manifest.csv"
-output_dir <- normalizePath("output/reports", mustWork = FALSE)
+manifest_path <- file.path(PATHS$output_notes, "assets_manifest.csv")
+output_dir <- normalizePath(PATHS$output_reports, mustWork = FALSE)
 log_path <- file.path(output_dir, "render_log.txt")
 
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)

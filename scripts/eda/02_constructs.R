@@ -13,7 +13,7 @@ source("R/paths.R")
 source("R/construct_helpers.R")
 source("R/asrs_constructs_schema.R")
 
-dir.create("output/tables", showWarnings = FALSE, recursive = TRUE)
+dir.create(PATHS$output_tables, showWarnings = FALSE, recursive = TRUE)
 
 # -----------------------------------------------------------------------------
 # Load and prepare data
@@ -41,7 +41,7 @@ validate_constructed_schema(constructed)
 # Write outputs
 # -----------------------------------------------------------------------------
 
-write_csv(phase_mapping_table, "output/tables/phase_mapping_used.csv")
+write_csv(phase_mapping_table, file.path(PATHS$output_tables, "phase_mapping_used.csv"))
 saveRDS(constructed, PATHS$constructed_rds)
 
 # -----------------------------------------------------------------------------
@@ -136,9 +136,9 @@ qc_summary <- bind_rows(
   time_block_freq
 )
 
-write_csv(qc_summary, "output/tables/constructs_qc_summary.csv")
+write_csv(qc_summary, file.path(PATHS$output_tables, "constructs_qc_summary.csv"))
 
 cat("Constructs complete. Outputs written to:\n")
 cat("  -", PATHS$constructed_rds, "\n")
-cat("  - output/tables/phase_mapping_used.csv\n")
-cat("  - output/tables/constructs_qc_summary.csv\n")
+cat("  -", file.path(PATHS$output_tables, "phase_mapping_used.csv"), "\n")
+cat("  -", file.path(PATHS$output_tables, "constructs_qc_summary.csv"), "\n")

@@ -92,7 +92,7 @@ pipeline <- list(
     num = 10,
     script = "scripts/eda/10_build_inventory_captions.R",
     name = "Asset manifest",
-    artifact = "output/notes/assets_manifest.csv"
+    artifact = file.path(PATHS$output_notes, "assets_manifest.csv")
   ),
   list(
     num = 11,
@@ -105,8 +105,8 @@ pipeline <- list(
     script = "scripts/eda/12_render_descriptives.R",
     name = "Render HTML + DOCX",
     artifact = c(
-      "output/reports/01_descriptive_analysis.html",
-      "output/reports/01_descriptive_analysis.docx"
+      file.path(PATHS$output_reports, "01_descriptive_analysis.html"),
+      file.path(PATHS$output_reports, "01_descriptive_analysis.docx")
     ),
     is_render = TRUE
   )
@@ -225,7 +225,7 @@ if (render_enabled) {
   }
   cat("  Quarto found:", quarto_path, "\n")
 
-  apa_ref <- "assets/apa_reference.docx"
+  apa_ref <- PATHS$apa_reference_doc
   if (!file.exists(apa_ref)) {
     cat("  APA reference doc missing, generating...\n")
     apa_script <- "scripts/eda/13_create_apa_reference.R"

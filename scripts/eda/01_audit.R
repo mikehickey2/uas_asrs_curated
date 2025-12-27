@@ -27,7 +27,7 @@ overview <- tibble(
   )
 )
 
-write_csv(overview, "output/tables/overview.csv")
+write_csv(overview, file.path(PATHS$output_tables, "overview.csv"))
 
 is_present <- function(x) {
   if (is.character(x)) {
@@ -51,7 +51,7 @@ missingness_by_var <- asrs_data |>
   ) |>
   arrange(desc(pct_missing))
 
-write_csv(missingness_by_var, "output/tables/missingness_by_variable.csv")
+write_csv(missingness_by_var, file.path(PATHS$output_tables, "missingness_by_variable.csv"))
 
 domain_map <- tribble(
   ~domain,          ~pattern,
@@ -89,7 +89,7 @@ missingness_by_domain <- missingness_by_var |>
   ) |>
   arrange(mean_pct_present)
 
-write_csv(missingness_by_domain, "output/tables/missingness_by_domain.csv")
+write_csv(missingness_by_domain, file.path(PATHS$output_tables, "missingness_by_domain.csv"))
 
 audit_notes <- c(
   "# Audit Notes",
@@ -178,10 +178,10 @@ audit_notes <- c(
   "  report1, report2)"
 )
 
-writeLines(audit_notes, "output/notes/audit_notes.md")
+writeLines(audit_notes, file.path(PATHS$output_notes, "audit_notes.md"))
 
 cat("Audit complete. Outputs written to:\n")
-cat("  - output/tables/overview.csv\n")
-cat("  - output/tables/missingness_by_variable.csv\n")
-cat("  - output/tables/missingness_by_domain.csv\n")
-cat("  - output/notes/audit_notes.md\n")
+cat("  -", file.path(PATHS$output_tables, "overview.csv"), "\n")
+cat("  -", file.path(PATHS$output_tables, "missingness_by_variable.csv"), "\n")
+cat("  -", file.path(PATHS$output_tables, "missingness_by_domain.csv"), "\n")
+cat("  -", file.path(PATHS$output_notes, "audit_notes.md"), "\n")

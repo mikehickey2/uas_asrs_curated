@@ -21,6 +21,11 @@ PATHS <- list(
   output_tables = "output/tables",
   output_figures = "output/figures",
   output_notes = "output/notes",
-  output_reports = "output/reports"
+  output_reports = "output/reports",
+
+  # ---------------------------------------------------------------------------
+  # Static assets (inputs for rendering)
+  # ---------------------------------------------------------------------------
+  apa_reference_doc = "assets/apa_reference.docx"
 )
 # nolint end

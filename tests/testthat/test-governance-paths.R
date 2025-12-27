@@ -113,7 +113,8 @@ test_that("R/paths.R exists and defines PATHS", {
     "output_tables",
     "output_figures",
     "output_notes",
-    "output_reports"
+    "output_reports",
+    "apa_reference_doc"
   )
 
   for (key in required_keys) {
