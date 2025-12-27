@@ -26,7 +26,7 @@ Use semantic entity prefixes with double-underscore separator:
 | `place__` | Location fields |
 | `environment__` | Environmental conditions |
 
-This approach was adopted from the qge/ASRS repository (https://github.com/qge/ASRS), which solved the same problem. No need to reinvent the wheel. The double underscore separator (\_\_) isn't a database standard—it likely derives from scikit-learn's pipeline parameter syntax—but it's visually distinct from the single underscore word separator and trivial to change later via str_replace_all("\_\_", "_") if needed.
+This approach was adopted from the qge/ASRS repository (https://github.com/qge/ASRS), which solved the same problem. No need to reinvent the wheel. The double underscore separator (`__`) isn't a database standard—it likely derives from scikit-learn's pipeline parameter syntax—but it's visually distinct from the single underscore word separator and trivial to change later via `str_replace_all("__", "_")` if needed.
 
 ## Consequences
 

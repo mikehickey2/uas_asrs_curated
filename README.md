@@ -1,12 +1,14 @@
 # uas_asrs_curated
 
-Import and validation tools for NASA ASRS UAS incident reports.
+Import, validation, and exploratory analysis tools for NASA ASRS UAS incident
+reports.
 
 ## Overview
 
-This project provides a reproducible pipeline for importing, transforming, and
-validating CSV exports from NASA's Aviation Safety Reporting System (ASRS). The
-current dataset contains 52 UAS/drone encounter reports curated by ASRS staff.
+This project provides a reproducible pipeline for importing, transforming,
+validating, and analyzing CSV exports from NASA's Aviation Safety Reporting
+System (ASRS). The current dataset contains 50 UAS/drone encounter reports
+curated by ASRS staff.
 
 The tools are designed to scale to larger ASRS CSV exports beyond this curated
 sample.
@@ -29,6 +31,8 @@ Rscript -e "renv::restore()"
 
 ## Usage
 
+### Import Pipeline
+
 ```r
 # Import and clean data
 source("scripts/import_data.R")
@@ -36,12 +40,38 @@ source("scripts/import_data.R")
 # Validate imported data
 source("R/validate_asrs.R")
 validate_asrs(asrs_uas_reports)
-
-# Run tests
-testthat::test_dir("tests/testthat")
 ```
 
 Output is written to `output/asrs_uas_reports_clean.csv`.
+
+### EDA Pipeline
+
+```bash
+# Run full 12-step EDA pipeline
+Rscript scripts/eda/00_run_all.R
+
+# Run specific steps (e.g., steps 10-12)
+Rscript scripts/eda/00_run_all.R --from 10 --to 12
+
+# List all pipeline steps
+Rscript scripts/eda/00_run_all.R --list
+
+# Run with lint + tests first
+Rscript scripts/eda/00_run_all.R --smoke
+```
+
+Outputs are written to `output/reports/`, `output/tables/`, and
+`output/figures/`.
+
+### Testing
+
+```bash
+# Run all tests
+Rscript -e "testthat::test_dir('tests/testthat')"
+
+# Lint R files
+Rscript -e "lintr::lint_dir('R')"
+```
 
 ## Project Structure
 
@@ -51,12 +81,24 @@ uas_asrs_curated/
 │   ├── asrs_schema.R       # Column definitions, types, valid values
 │   ├── import_asrs.R       # Pure import function
 │   ├── validate_asrs.R     # Validation function
-│   └── validation_helpers.R
-├── scripts/                # Executable scripts
-│   └── import_data.R       # Import wrapper (writes to output/)
-├── tests/testthat/         # Test suite (20 tests)
+│   ├── validation_helpers.R
+│   └── apa_tables.R        # APA-formatted flextable output
+├── scripts/
+│   ├── import_data.R       # Import wrapper
+│   ├── dev/                # Development tools (lint, test runners)
+│   └── eda/                # 12-step EDA pipeline
+│       ├── 00_run_all.R    # Pipeline orchestrator
+│       ├── 01_audit.R      # Data audit and completeness
+│       ├── 02_constructs.R # Derived variables
+│       ├── ...             # Steps 03-11
+│       └── 12_render_descriptives.R
+├── tests/testthat/         # Test suite (150+ tests)
 ├── data/                   # Raw ASRS CSV exports
-├── output/                 # Processed data, figures, tables
+├── output/
+│   ├── reports/            # HTML and DOCX reports
+│   ├── tables/             # CSV tables
+│   └── figures/            # PNG figures
+├── assets/                 # APA reference document
 └── doc/                    # Documentation
 ```
 
@@ -72,7 +114,7 @@ The `doc/` directory contains reference materials:
 
 ## Data
 
-The current dataset contains **52 UAS encounter reports** curated by NASA ASRS
+The current dataset contains **50 UAS encounter reports** curated by NASA ASRS
 staff specifically for UAS research. These reports are included in the
 repository.
 
@@ -85,10 +127,38 @@ For additional ASRS data:
 The import tools handle the standard ASRS CSV export format and are designed
 to scale to larger datasets.
 
-## Upcoming Work
+## Exploratory Data Analysis
 
-Analysis scripts are in development. Check the repository branches for updates
-to exploratory and statistical analysis.
+The `scripts/eda/` directory contains a 12-step pipeline that produces
+publication-ready descriptive analysis outputs:
+
+| Step | Script | Output |
+|------|--------|--------|
+| 1 | `01_audit.R` | Data completeness audit |
+| 2 | `02_constructs.R` | Derived variables (phase, time block, detector) |
+| 3 | `03_tags.R` | Tag analysis with co-occurrence pairs |
+| 4 | `04_tables_descriptives.R` | Tables 1-3 (overview, context, severity) |
+| 5 | `05_figures_story.R` | Figures 1-3 (detection, markers, tags) |
+| 6 | `06_descriptive_findings_md.R` | Narrative draft |
+| 7 | `07_context_severity_slices.R` | NMAC by context (Table 4, Figures 4-6) |
+| 8-9 | Append/rewrite scripts | Polish NMAC section |
+| 10 | `10_build_inventory_captions.R` | Asset manifest with APA captions |
+| 11 | `11_assemble_descriptives_qmd.R` | Assemble Quarto document |
+| 12 | `12_render_descriptives.R` | Render HTML + DOCX reports |
+
+### Key Features
+
+- **Wilson confidence intervals** for binomial proportions
+- **APA-formatted tables** via flextable for Word output
+- **Fail-loud error handling** with native stack traces
+- **Denominator transparency** in all tables and figures
+
+### Output Files
+
+- `output/reports/01_descriptive_analysis.html` - Self-contained HTML report
+- `output/reports/01_descriptive_analysis.docx` - APA-styled Word document
+- `output/tables/*.csv` - Machine-readable table data
+- `output/figures/*.png` - Publication-ready figures
 
 ---
 
@@ -125,7 +195,7 @@ program administered by NASA under agreement with the Federal Aviation
 Administration (FAA). The ASRS has collected aviation safety incident reports
 from pilots, controllers, and other aviation professionals since 1976.
 
-The 52 UAS encounter reports in this repository were curated by ASRS staff for
+The 50 UAS encounter reports in this repository were curated by ASRS staff for
 UAS research purposes.
 
 > The ASRS collects, analyzes, and responds to voluntarily submitted aviation

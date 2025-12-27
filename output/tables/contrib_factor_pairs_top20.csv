@@ -1,0 +1,21 @@
+tag1,tag2,n_reports,pct_of_all_reports
+Aircraft,Software and Automation,5,10
+Chart Or Publication,Human Factors,5,10
+Environment - Non Weather Related,Human Factors,5,10
+Human Factors,Procedure,5,10
+Human Factors,Software and Automation,5,10
+Airspace Structure,Human Factors,4,8
+Aircraft,Human Factors,3,6
+Procedure,Software and Automation,3,6
+Aircraft,Weather,2,4
+Airspace Structure,Procedure,2,4
+Environment - Non Weather Related,Procedure,2,4
+Environment - Non Weather Related,Weather,2,4
+Procedure,Weather,2,4
+Software and Automation,Weather,2,4
+Aircraft,Environment - Non Weather Related,1,2
+Aircraft,Manuals,1,2
+Aircraft,Procedure,1,2
+Airspace Structure,Chart Or Publication,1,2
+Airspace Structure,Software and Automation,1,2
+Chart Or Publication,Software and Automation,1,2

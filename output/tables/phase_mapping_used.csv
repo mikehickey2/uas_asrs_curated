@@ -1,0 +1,6 @@
+phase_simple,keywords,precedence_rank
+Arrival,Final Approach; Initial Approach; Descent; Landing,1
+Departure,Takeoff / Launch; Climb,2
+Surface,Taxi; Ground,3
+Enroute,Cruise,4
+Unknown,(default if no match),5

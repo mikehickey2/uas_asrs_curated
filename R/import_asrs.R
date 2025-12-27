@@ -1,11 +1,24 @@
 #' Import and clean ASRS CSV export
 #'
-#' @param path Path to raw ASRS CSV file
-#' @return Cleaned tibble with 125 columns
+#' Reads a raw ASRS CSV export, renames columns to semantic entity-prefixed
+#' names, and coerces columns to appropriate types (Date, integer, double,
+#' logical) based on the schema defined in asrs_schema.R.
+#'
+#' @param path Path to raw ASRS CSV file.
+#' @return A tibble with 125 columns:
+#'   \itemize{
+#'     \item Character columns for most fields
+#'     \item Date column for time__date (parsed from YYYYMM)
+#'     \item Integer columns for counts and numeric codes
+#'     \item Double column for distance measurements
+#'     \item Logical columns for Y/N maintenance and UAS fields
+#'   }
+#' @export
 library(readr)
 library(dplyr)
 library(stringr)
 library(lubridate)
+library(rlang)
 source("R/asrs_schema.R")
 
 parse_logical_yn <- function(x) {

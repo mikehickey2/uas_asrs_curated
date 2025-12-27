@@ -1,0 +1,5 @@
+field,n_reports_total,n_reports_field_present,pct_field_present
+events__anomaly,50,50,100
+events__result,50,50,100
+assessments__contributing_factors_situations,50,50,100
+assessments__primary_problem,50,50,100

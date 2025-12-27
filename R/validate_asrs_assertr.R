@@ -1,4 +1,7 @@
 #' Assertr pipeline validation for ASRS data
+#'
+# nolint start: pipe_consistency_linter
+# assertr::verify() requires magrittr pipe for `.` pronoun support
 library(dplyr)
 library(assertr)
 library(checkmate)
@@ -57,3 +60,4 @@ validate_asrs_pipeline <- function(df) {
     }) %>%
     invisible()
 }
+# nolint end: pipe_consistency_linter

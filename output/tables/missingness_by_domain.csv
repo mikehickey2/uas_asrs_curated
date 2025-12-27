@@ -1,0 +1,12 @@
+domain,n_vars,mean_pct_present,median_pct_present,min_pct_present,max_pct_present
+Aircraft 2,35,6.8,0,0,64
+Component,4,11.5,12,10,12
+Aircraft 1,35,32,24,0,100
+Person,22,32.2,10,0,100
+Environment,6,36.7,50,2,64
+Report text,5,44.4,12,0,100
+Place,7,46.6,46,0,92
+Events,6,71.7,96,0,100
+Time,2,96,96,92,100
+Assessments,2,100,100,100,100
+Other,1,100,100,100,100

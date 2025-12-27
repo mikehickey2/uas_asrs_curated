@@ -1,0 +1,19 @@
+project:
+  type: default
+  output-dir: ../../output/reports
+
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-summary: "Show code"
+    theme: cosmo
+    self-contained: true
+
+execute:
+  warning: true
+  message: true
+  echo: true
+
+author: "Michael J. Hickey"

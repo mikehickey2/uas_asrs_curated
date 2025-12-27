@@ -1,0 +1,34 @@
+crosstab_name,row_var,row_level,col_var,col_level,n_total,n_available_rows,n_available_cols,n,row_pct,col_pct
+reporter_org_by_time_block,reporter_org,Air Carrier,time_block,0601-1200,50,49,46,4,20,28.6
+reporter_org_by_time_block,reporter_org,Air Carrier,time_block,1201-1800,50,49,46,9,45,42.9
+reporter_org_by_time_block,reporter_org,Air Carrier,time_block,1801-2400,50,49,46,3,15,37.5
+reporter_org_by_time_block,reporter_org,Air Carrier,time_block,Unknown,50,49,46,4,20,100
+reporter_org_by_time_block,reporter_org,Air Taxi,time_block,1801-2400,50,49,46,1,100,12.5
+reporter_org_by_time_block,reporter_org,Commercial Operator (UAS),time_block,0601-1200,50,49,46,5,41.7,35.7
+reporter_org_by_time_block,reporter_org,Commercial Operator (UAS),time_block,1201-1800,50,49,46,6,50,28.6
+reporter_org_by_time_block,reporter_org,Commercial Operator (UAS),time_block,1801-2400,50,49,46,1,8.3,12.5
+reporter_org_by_time_block,reporter_org,FBO,time_block,1201-1800,50,49,46,2,100,9.5
+reporter_org_by_time_block,reporter_org,Government,time_block,0001-0600,50,49,46,2,28.6,66.7
+reporter_org_by_time_block,reporter_org,Government,time_block,0601-1200,50,49,46,1,14.3,7.1
+reporter_org_by_time_block,reporter_org,Government,time_block,1201-1800,50,49,46,2,28.6,9.5
+reporter_org_by_time_block,reporter_org,Government,time_block,1801-2400,50,49,46,2,28.6,25
+reporter_org_by_time_block,reporter_org,Personal,time_block,0601-1200,50,49,46,2,50,14.3
+reporter_org_by_time_block,reporter_org,Personal,time_block,1201-1800,50,49,46,1,25,4.8
+reporter_org_by_time_block,reporter_org,Personal,time_block,1801-2400,50,49,46,1,25,12.5
+reporter_org_by_time_block,reporter_org,Recreational / Hobbyist (UAS),time_block,0601-1200,50,49,46,2,66.7,14.3
+reporter_org_by_time_block,reporter_org,Recreational / Hobbyist (UAS),time_block,1201-1800,50,49,46,1,33.3,4.8
+reporter_org_by_time_block,reporter_org,Unknown,time_block,0001-0600,50,49,46,1,100,33.3
+detector_by_phase_simple,events__detector,Automation Air Traffic Control,phase_simple,Arrival,50,47,50,1,100,4.3
+detector_by_phase_simple,events__detector,Person Air Traffic Control,phase_simple,Arrival,50,47,50,2,100,8.7
+detector_by_phase_simple,events__detector,Person Flight Crew,phase_simple,Arrival,50,47,50,17,58.6,73.9
+detector_by_phase_simple,events__detector,Person Flight Crew,phase_simple,Departure,50,47,50,3,10.3,33.3
+detector_by_phase_simple,events__detector,Person Flight Crew,phase_simple,Enroute,50,47,50,7,24.1,53.8
+detector_by_phase_simple,events__detector,Person Flight Crew,phase_simple,Surface,50,47,50,1,3.4,50
+detector_by_phase_simple,events__detector,Person Flight Crew,phase_simple,Unknown,50,47,50,1,3.4,33.3
+detector_by_phase_simple,events__detector,Person UAS Crew,phase_simple,Arrival,50,47,50,1,6.7,4.3
+detector_by_phase_simple,events__detector,Person UAS Crew,phase_simple,Departure,50,47,50,6,40,66.7
+detector_by_phase_simple,events__detector,Person UAS Crew,phase_simple,Enroute,50,47,50,5,33.3,38.5
+detector_by_phase_simple,events__detector,Person UAS Crew,phase_simple,Surface,50,47,50,1,6.7,50
+detector_by_phase_simple,events__detector,Person UAS Crew,phase_simple,Unknown,50,47,50,2,13.3,66.7
+detector_by_phase_simple,events__detector,Unknown,phase_simple,Arrival,50,47,50,2,66.7,8.7
+detector_by_phase_simple,events__detector,Unknown,phase_simple,Enroute,50,47,50,1,33.3,7.7

@@ -2,6 +2,7 @@ options(cli.default_handler = function(...) {})
 library(dplyr)
 library(purrr)
 library(checkmate)
+library(withr)
 
 find_root <- function() {
   cur <- normalizePath(getwd())
@@ -15,9 +16,7 @@ find_root <- function() {
 }
 
 root_dir <- find_root()
-old_dir <- getwd()
-setwd(root_dir)
-on.exit(setwd(old_dir), add = TRUE)
+withr::local_dir(root_dir, .local_envir = parent.frame())
 
 source("R/asrs_schema.R")
 source("R/import_asrs.R")
