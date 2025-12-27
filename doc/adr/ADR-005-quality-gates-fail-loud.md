@@ -16,36 +16,42 @@ and defines how they are enforced.
 
 ### Script Size Limits
 
-| Limit | Lines | Action Required |
-|-------|-------|-----------------|
-| **Soft limit** | 300 | Preferred maximum; consider refactoring |
-| **Hard limit** | 500 | Refactor required before merge |
+| Limit | Lines | Enforcement | Action |
+|-------|-------|-------------|--------|
+| **Soft limit** | 300 | Automated (inform) | Consider refactoring |
+| **Hard limit** | 500 | Automated (test fails) | Refactor required before merge |
 
-**Rationale:** Long scripts are harder to understand, test, and maintain. The
-300-line soft limit encourages modular design. The 500-line hard limit is a
-non-negotiable gate.
+**Enforcement:** `test-governance-script-size.R` scans `scripts/eda/*.R` and:
+- Reports scripts exceeding 300 lines via `testthat::inform()`
+- Fails the test suite if any script exceeds 500 lines
 
 **Counting rules:**
 - Count all lines including comments and blank lines
-- Exclude shebang and file header comments (first 10 lines)
-- Use `wc -l` or equivalent for measurement
+- Exclude trailing blank lines
+- Measured with `readLines()` in the governance test
 
 ### Line Length Policy
 
-| Threshold | Characters | Rule |
-|-----------|------------|------|
-| **Target** | 80 | Default for general R code (improves diff readability) |
-| **Allowed** | 110 | Exceptions for paths, regex, YAML, complex calls |
-| **Hard stop** | 120 | Refactor required; no exceptions |
+| Threshold | Characters | Enforcement |
+|-----------|------------|-------------|
+| **Target** | 80 | Policy (not enforced) |
+| **Allowed** | 110 | Automated lint check |
+| **Hard stop** | 120 | Policy (refactor required) |
 
-**Lint enforcement:** `.lintr` is configured with `line_length_linter(110)`.
-Lines exceeding 110 characters will fail lint checks.
+**Enforcement:** `.lintr` is configured with `line_length_linter(110)`.
+Lines exceeding 110 characters fail lint checks.
 
 **Handling long lines:**
 - Extract constants or use intermediate variables
 - Break `glue()` strings across lines
 - Split long pipelines
 - Use `# nolint` sparingly with explanatory comment
+
+### Path Governance
+
+**Enforcement:** `test-governance-paths.R` scans `scripts/eda/*.R` and fails if
+hardcoded `"data/"`, `"output/"`, or `"assets/"` paths appear outside of
+`PATHS$...` usage. See ADR-006 for the path constants policy.
 
 ### Fail-Loud Policy
 
@@ -56,22 +62,25 @@ should propagate with full stack traces.
 ```r
 # DO NOT DO THIS
 tryCatch(risky_operation(), error = function(e) message(e))
-
-# DO NOT DO THIS
 suppressWarnings(potentially_problematic())
-
-# DO NOT DO THIS
 suppressMessages(noisy_function())
 ```
 
 **Allowed exceptions:**
 - `tryCatch` with explicit re-throw after logging
 - `suppressWarnings` only with user approval and documented rationale
-- Production deployments may have different error handling (not applicable here)
 
-**Rationale:** During development and analysis, silent failures hide bugs. Stack
-traces are essential for debugging. If something fails, we want to know
-immediately with full context.
+**Enforcement:** Policy (not automated). Code review flags these patterns.
+
+## Enforcement Summary
+
+| Gate | Tool | Enforcement Level |
+|------|------|-------------------|
+| Script size (500 lines) | `test-governance-script-size.R` | Automated (test fails) |
+| Script size (300 lines) | `test-governance-script-size.R` | Automated (inform only) |
+| Line length (110 chars) | lintr via `.lintr` | Automated (lint fails) |
+| Path constants | `test-governance-paths.R` | Automated (test fails) |
+| Fail-loud | Code review | Policy (not enforced) |
 
 ### Required Quality Gate Commands
 
@@ -81,10 +90,10 @@ Before merging changes, run these commands in order:
 # 1. Lint check (enforces line length, style)
 Rscript scripts/dev/01_lint.R
 
-# 2. Test suite (validates functions)
+# 2. Test suite (enforces script size, path governance, validates functions)
 Rscript scripts/dev/02_test.R
 
-# 3. Smoke test (runs full pipeline with lint+tests first)
+# 3. Smoke test (runs lint + tests + pipeline)
 Rscript scripts/eda/00_run_all.R --smoke
 ```
 
@@ -96,64 +105,13 @@ All three must pass with zero errors.
 
 - Consistent code quality across all scripts
 - Errors surface immediately during development
-- Easier debugging with full stack traces
-- Enforced via automation (lint, tests, smoke)
+- Script size and path governance enforced via test suite
+- Line length enforced via lint
 
 ### Negative
 
 - Stricter discipline required from contributors
 - Some legitimate long lines need `# nolint` annotations
-- Cannot silently handle known-benign warnings
-
-### Alternatives Considered
-
-**Alternative A: No hard limits, guidelines only**
-Rejected because guidelines without enforcement lead to drift. Hard limits
-provide clear boundaries.
-
-**Alternative B: Stricter limits (200 lines, 80 char hard)**
-Rejected because overly strict limits cause excessive refactoring overhead
-and awkward line breaks that hurt readability.
-
-**Alternative C: Allow `tryCatch` for "expected" errors**
-Rejected because distinguishing "expected" from "unexpected" errors is
-subjective and leads to hidden failures.
-
-## Enforcement
-
-### Script Size
-
-| Mechanism | How |
-|-----------|-----|
-| Code review | Reviewer checks line count for new/modified scripts |
-| Manual check | `wc -l scripts/eda/*.R` before commit |
-
-### Line Length
-
-| Mechanism | Tool | Configuration |
-|-----------|------|---------------|
-| Automated lint | lintr | `.lintr` with `line_length_linter(110)` |
-| Dev script | `scripts/dev/01_lint.R` | Runs lintr on `R/` and `scripts/` |
-| Smoke test | `00_run_all.R --smoke` | Runs lint before pipeline |
-
-### Fail-Loud
-
-| Mechanism | How |
-|-----------|-----|
-| Code review | Reviewer flags `tryCatch`, `suppressWarnings`, `suppressMessages` |
-| CLAUDE.md | AI agents instructed never to use suppression without approval |
-| Grep check | `grep -r "suppressWarnings\|suppressMessages\|tryCatch" R/ scripts/` |
-
-### Full Quality Gate
-
-```bash
-# Run all gates in sequence
-Rscript scripts/dev/01_lint.R && \
-Rscript scripts/dev/02_test.R && \
-Rscript scripts/eda/00_run_all.R --smoke
-```
-
-If any command fails, the gate fails.
 
 ## References
 

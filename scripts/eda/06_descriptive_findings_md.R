@@ -7,42 +7,44 @@ library(stringr)
 library(glue)
 library(scales)
 
-dir.create("output/notes", showWarnings = FALSE, recursive = TRUE)
+source("R/paths.R")
+
+dir.create(PATHS$output_notes, showWarnings = FALSE, recursive = TRUE)
 
 table1 <- read_csv(
-  "output/tables/table1_overview_completeness.csv",
+  file.path(PATHS$output_tables, "table1_overview_completeness.csv"),
   show_col_types = FALSE
 )
 table2 <- read_csv(
-  "output/tables/table2_operational_context.csv",
+  file.path(PATHS$output_tables, "table2_operational_context.csv"),
   show_col_types = FALSE
 )
 table2_crosstabs <- read_csv(
-  "output/tables/table2_optional_crosstabs.csv",
+  file.path(PATHS$output_tables, "table2_optional_crosstabs.csv"),
   show_col_types = FALSE
 )
 table3 <- read_csv(
-  "output/tables/table3_severity_markers.csv",
+  file.path(PATHS$output_tables, "table3_severity_markers.csv"),
   show_col_types = FALSE
 )
 tags_anomaly <- read_csv(
-  "output/tables/tags_anomaly.csv",
+  file.path(PATHS$output_tables, "tags_anomaly.csv"),
   show_col_types = FALSE
 )
 tags_result <- read_csv(
-  "output/tables/tags_result.csv",
+  file.path(PATHS$output_tables, "tags_result.csv"),
   show_col_types = FALSE
 )
 tags_cf <- read_csv(
-  "output/tables/tags_contributing_factors.csv",
+  file.path(PATHS$output_tables, "tags_contributing_factors.csv"),
   show_col_types = FALSE
 )
 tags_pp <- read_csv(
-  "output/tables/tags_primary_problem.csv",
+  file.path(PATHS$output_tables, "tags_primary_problem.csv"),
   show_col_types = FALSE
 )
 cf_pairs <- read_csv(
-  "output/tables/contrib_factor_pairs_top20.csv",
+  file.path(PATHS$output_tables, "contrib_factor_pairs_top20.csv"),
   show_col_types = FALSE
 )
 
@@ -329,5 +331,5 @@ md <- c(md, "---", "",
   "Review and edit before publication.*"
 )
 
-writeLines(md, "output/notes/descriptive_findings_draft.md")
-cat("Written: output/notes/descriptive_findings_draft.md\n")
+writeLines(md, file.path(PATHS$output_notes, "descriptive_findings_draft.md"))
+cat("Written:", file.path(PATHS$output_notes, "descriptive_findings_draft.md"), "\n")

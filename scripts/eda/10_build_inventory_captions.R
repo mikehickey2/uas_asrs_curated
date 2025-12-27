@@ -8,7 +8,9 @@ library(glue)
 library(fs)
 library(lubridate)
 
-dir.create("output/notes", showWarnings = FALSE, recursive = TRUE)
+source("R/paths.R")
+
+dir.create(PATHS$output_notes, showWarnings = FALSE, recursive = TRUE)
 
 # =============================================================================
 # Define assets
@@ -64,7 +66,7 @@ get_file_info <- function(path) {
 table_manifest <- tables |>
   mutate(
     type = "Table",
-    path = paste0("output/tables/", filename)
+    path = file.path(PATHS$output_tables, filename)
   ) |>
   rowwise() |>
   mutate(
@@ -79,7 +81,7 @@ table_manifest <- tables |>
 figure_manifest <- figures |>
   mutate(
     type = "Figure",
-    path = paste0("output/figures/", filename)
+    path = file.path(PATHS$output_figures, filename)
   ) |>
   rowwise() |>
   mutate(
@@ -93,8 +95,8 @@ figure_manifest <- figures |>
 
 manifest <- bind_rows(table_manifest, figure_manifest)
 
-write_csv(manifest, "output/notes/assets_manifest.csv")
-cat("Written: output/notes/assets_manifest.csv\n")
+write_csv(manifest, file.path(PATHS$output_notes, "assets_manifest.csv"))
+cat("Written:", file.path(PATHS$output_notes, "assets_manifest.csv"), "\n")
 
 # =============================================================================
 # Define captions and denominator notes
@@ -219,7 +221,7 @@ inventory_lines <- c(
 for (i in seq_len(nrow(tables))) {
   row <- tables[i, ]
   cap_info <- table_captions[[row$id]]
-  path <- paste0("output/tables/", row$filename)
+  path <- file.path(PATHS$output_tables, row$filename)
 
   inventory_lines <- c(
     inventory_lines,
@@ -245,7 +247,7 @@ inventory_lines <- c(
 for (i in seq_len(nrow(figures))) {
   row <- figures[i, ]
   cap_info <- figure_captions[[row$id]]
-  path <- paste0("output/figures/", row$filename)
+  path <- file.path(PATHS$output_figures, row$filename)
 
   inventory_lines <- c(
     inventory_lines,
@@ -273,8 +275,8 @@ inventory_lines <- c(
   ""
 )
 
-writeLines(inventory_lines, "output/notes/apa_inventory.md")
-cat("Written: output/notes/apa_inventory.md\n")
+writeLines(inventory_lines, file.path(PATHS$output_notes, "apa_inventory.md"))
+cat("Written:", file.path(PATHS$output_notes, "apa_inventory.md"), "\n")
 
 n_tables <- sum(table_manifest$exists)
 n_figures <- sum(figure_manifest$exists)

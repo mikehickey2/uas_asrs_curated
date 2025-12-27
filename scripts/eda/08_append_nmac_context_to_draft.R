@@ -7,10 +7,12 @@ library(stringr)
 library(glue)
 library(scales)
 
-dir.create("output/notes", showWarnings = FALSE, recursive = TRUE)
+source("R/paths.R")
 
-table4 <- read_csv("output/tables/table4_nmac_by_context.csv", show_col_types = FALSE)
-draft_path <- "output/notes/descriptive_findings_draft.md"
+dir.create(PATHS$output_notes, showWarnings = FALSE, recursive = TRUE)
+
+table4 <- read_csv(file.path(PATHS$output_tables, "table4_nmac_by_context.csv"), show_col_types = FALSE)
+draft_path <- file.path(PATHS$output_notes, "descriptive_findings_draft.md")
 draft_lines <- readLines(draft_path)
 
 n_total <- table4$n_total[1]
@@ -235,7 +237,7 @@ changelog <- c(
   ""
 )
 
-writeLines(changelog, "output/notes/descriptive_findings_change_log.md")
-cat("Written: output/notes/descriptive_findings_change_log.md\n")
+writeLines(changelog, file.path(PATHS$output_notes, "descriptive_findings_change_log.md"))
+cat("Written:", file.path(PATHS$output_notes, "descriptive_findings_change_log.md"), "\n")
 
 cat("\nDraft update complete.\n")

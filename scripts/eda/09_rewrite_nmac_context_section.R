@@ -8,9 +8,11 @@ library(glue)
 library(scales)
 library(lubridate)
 
-table4 <- read_csv("output/tables/table4_nmac_by_context.csv", show_col_types = FALSE)
-draft_path <- "output/notes/descriptive_findings_draft.md"
-changelog_path <- "output/notes/descriptive_findings_change_log.md"
+source("R/paths.R")
+
+table4 <- read_csv(file.path(PATHS$output_tables, "table4_nmac_by_context.csv"), show_col_types = FALSE)
+draft_path <- file.path(PATHS$output_notes, "descriptive_findings_draft.md")
+changelog_path <- file.path(PATHS$output_notes, "descriptive_findings_change_log.md")
 
 draft_text <- paste(readLines(draft_path), collapse = "\n")
 

@@ -11,11 +11,13 @@ library(binom)
 library(scales)
 library(purrr)
 
-dir.create("output/tables", showWarnings = FALSE, recursive = TRUE)
-dir.create("output/figures", showWarnings = FALSE, recursive = TRUE)
-dir.create("output/notes", showWarnings = FALSE, recursive = TRUE)
+source("R/paths.R")
 
-asrs <- readRDS("output/asrs_constructed.rds")
+dir.create(PATHS$output_tables, showWarnings = FALSE, recursive = TRUE)
+dir.create(PATHS$output_figures, showWarnings = FALSE, recursive = TRUE)
+dir.create(PATHS$output_notes, showWarnings = FALSE, recursive = TRUE)
+
+asrs <- readRDS(PATHS$constructed_rds)
 n_total <- nrow(asrs)
 min_group_size <- 5
 
@@ -62,7 +64,7 @@ context_vars <- c("phase_simple", "events__detector", "time_block")
 context_vars <- context_vars[context_vars %in% names(asrs)]
 
 table4 <- map_dfr(context_vars, ~ compute_nmac_by_context(asrs, .x, n_total))
-write_csv(table4, "output/tables/table4_nmac_by_context.csv")
+write_csv(table4, file.path(PATHS$output_tables, "table4_nmac_by_context.csv"))
 cat("Written: table4_nmac_by_context.csv\n")
 
 # =============================================================================
@@ -135,7 +137,7 @@ for (spec in fig_specs) {
   fig <- plot_nmac_by_context(
     table4, spec$var, spec$title, make_subtitle(spec$label)
   )
-  ggsave(paste0("output/figures/", spec$file), fig,
+  ggsave(file.path(PATHS$output_figures, spec$file), fig,
          width = 7, height = 4, dpi = 300)
   cat("Written:", spec$file, "\n")
 
@@ -182,12 +184,12 @@ notes_content <- c(notes_content, "",
   "  but do not account for selection bias in the curated sample.", ""
 )
 
-writeLines(notes_content, "output/notes/context_severity_notes.md")
+writeLines(notes_content, file.path(PATHS$output_notes, "context_severity_notes.md"))
 cat("Written: context_severity_notes.md\n")
 
 cat("\nContext-severity analysis complete. Outputs:\n")
-cat("  - output/tables/table4_nmac_by_context.csv\n")
-cat("  - output/figures/fig4_nmac_by_phase_ci.png\n")
-cat("  - output/figures/fig5_nmac_by_detector_ci.png\n")
-if (fig6_generated) cat("  - output/figures/fig6_nmac_by_timeblock_ci.png\n")
-cat("  - output/notes/context_severity_notes.md\n")
+cat("  -", file.path(PATHS$output_tables, "table4_nmac_by_context.csv"), "\n")
+cat("  -", file.path(PATHS$output_figures, "fig4_nmac_by_phase_ci.png"), "\n")
+cat("  -", file.path(PATHS$output_figures, "fig5_nmac_by_detector_ci.png"), "\n")
+if (fig6_generated) cat("  -", file.path(PATHS$output_figures, "fig6_nmac_by_timeblock_ci.png"), "\n")
+cat("  -", file.path(PATHS$output_notes, "context_severity_notes.md"), "\n")

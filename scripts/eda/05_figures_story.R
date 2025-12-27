@@ -9,20 +9,22 @@ library(stringr)
 library(forcats)
 library(patchwork)
 
-dir.create("output/figures", showWarnings = FALSE, recursive = TRUE)
-dir.create("output/notes", showWarnings = FALSE, recursive = TRUE)
+source("R/paths.R")
 
-asrs <- readRDS("output/asrs_constructed.rds")
+dir.create(PATHS$output_figures, showWarnings = FALSE, recursive = TRUE)
+dir.create(PATHS$output_notes, showWarnings = FALSE, recursive = TRUE)
+
+asrs <- readRDS(PATHS$constructed_rds)
 severity_markers <- read_csv(
-  "output/tables/table3_severity_markers.csv",
+  file.path(PATHS$output_tables, "table3_severity_markers.csv"),
   show_col_types = FALSE
 )
 tags_anomaly <- read_csv(
-  "output/tables/tags_anomaly.csv",
+  file.path(PATHS$output_tables, "tags_anomaly.csv"),
   show_col_types = FALSE
 )
 tags_cf <- read_csv(
-  "output/tables/tags_contributing_factors.csv",
+  file.path(PATHS$output_tables, "tags_contributing_factors.csv"),
   show_col_types = FALSE
 )
 
@@ -90,7 +92,7 @@ fig1 <- ggplot(fig1_counts, aes(x = phase, y = detector, fill = n)) +
   )
 
 ggsave(
-  "output/figures/fig1_detector_by_phase.png",
+  file.path(PATHS$output_figures, "fig1_detector_by_phase.png"),
   fig1,
   width = 8, height = 5, dpi = 300
 )
@@ -140,7 +142,7 @@ fig2 <- ggplot(fig2_data, aes(x = p_hat_pct, y = marker)) +
   )
 
 ggsave(
-  "output/figures/fig2_severity_markers_ci.png",
+  file.path(PATHS$output_figures, "fig2_severity_markers_ci.png"),
   fig2,
   width = 7, height = 4, dpi = 300
 )
@@ -231,7 +233,7 @@ fig3 <- panel_a / panel_b +
   )
 
 ggsave(
-  "output/figures/fig3_top_tags.png",
+  file.path(PATHS$output_figures, "fig3_top_tags.png"),
   fig3,
   width = 9, height = 8, dpi = 300
 )
@@ -296,11 +298,11 @@ notes_content <- c(
   ""
 )
 
-writeLines(notes_content, "output/notes/figure_notes.md")
+writeLines(notes_content, file.path(PATHS$output_notes, "figure_notes.md"))
 cat("Written: figure_notes.md\n")
 
 cat("\nFigure generation complete. Outputs:\n")
-cat("  - output/figures/fig1_detector_by_phase.png\n")
-cat("  - output/figures/fig2_severity_markers_ci.png\n")
-cat("  - output/figures/fig3_top_tags.png\n")
-cat("  - output/notes/figure_notes.md\n")
+cat("  -", file.path(PATHS$output_figures, "fig1_detector_by_phase.png"), "\n")
+cat("  -", file.path(PATHS$output_figures, "fig2_severity_markers_ci.png"), "\n")
+cat("  -", file.path(PATHS$output_figures, "fig3_top_tags.png"), "\n")
+cat("  -", file.path(PATHS$output_notes, "figure_notes.md"), "\n")

@@ -1,6 +1,6 @@
 # Descriptive Findings Change Log
 
-**Last updated**: 2025-12-27 01:45:36.540593
+**Last updated**: 2025-12-27 16:53:05.23718
 
 ---
 
@@ -8,7 +8,7 @@
 
 ### Added: Context of NMAC tags section
 
-- **Date/time**: 2025-12-27 01:45:36.540707
+- **Date/time**: 2025-12-27 16:53:05.237295
 - **Section inserted after**: ## Safety significance markers
 - **Subsections added**:
     - ### NMAC by detector
@@ -31,7 +31,7 @@
 
 ### Rewrite: Context of NMAC tags section
 
-- **Date/time**: 2025-12-27 01:45:36
+- **Date/time**: 2025-12-27 16:53:05
 - **Action**: Rewrote Context of NMAC tags section from table4_nmac_by_context.csv to remove truncation artifacts and standardize APA phrasing.
 - **Changes**:
     - Rebuilt all subsections from CSV data

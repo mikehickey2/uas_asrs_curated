@@ -238,6 +238,48 @@ Secondary reporter (if multiple reports combined).
 
 ---
 
+## Derived Analytical Columns
+
+These columns are created in EDA Step 2 (`scripts/eda/02_constructs.R`) and are present
+in `data/asrs_constructed.rds`. They are not part of the raw ASRS export but are
+derived from source columns for analytical convenience. The schema definition is
+maintained in `R/asrs_constructs_schema.R`.
+
+| Column | Type | Definition | Source Column | Notes |
+|--------|------|------------|---------------|-------|
+| `month` | `character` | Year-month string (YYYY-MM format) | `time__date` | |
+| `time_block` | `character` | Time of day block (direct alias) | `time__local_time_of_day` | |
+| `reporter_org` | `character` | Reporter organization (direct alias) | `person1__reporter_organization` | |
+| `phase_raw` | `character` | Raw flight phase string (direct alias) | `ac1__flight_phase` | |
+| `phase_simple` | `character` | Simplified flight phase category | `ac1__flight_phase` | 5 levels: `Arrival`, `Departure`, `Surface`, `Enroute`, `Unknown` |
+| `airspace_class` | `character` | Airspace class extracted from text | `ac1__airspace` | Values `A`-`G` or `Unknown`; regex: `Class\s+([A-G])` |
+| `flag_nmac` | `logical` | TRUE if NMAC mentioned in anomaly | `events__anomaly` | regex: `\bNMAC\b` (case-insensitive) |
+| `flag_evasive` | `logical` | TRUE if evasive action taken | `events__result` | regex: `Evasive Action` |
+| `flag_atc` | `logical` | TRUE if ATC assistance/clarification | `events__result` | regex: `ATC Assistance\|Clarification` |
+| `miss_horizontal_ft` | `numeric` | Horizontal miss distance in feet | `events__miss_distance` | Parsed from `Horizontal NNN` pattern |
+| `miss_vertical_ft` | `numeric` | Vertical miss distance in feet | `events__miss_distance` | Parsed from `Vertical NNN` pattern |
+
+### Categorical Level Definitions
+
+**`phase_simple`** maps raw flight phase values to simplified categories:
+
+| Level | Keywords Matched |
+|-------|------------------|
+| `Arrival` | Final Approach, Initial Approach, Descent, Landing |
+| `Departure` | Takeoff, Launch, Climb |
+| `Surface` | Taxi, Ground |
+| `Enroute` | Cruise |
+| `Unknown` | No match or missing value |
+
+**`airspace_class`** extracts the class letter from airspace descriptions:
+
+| Level | Meaning |
+|-------|---------|
+| `A`-`G` | FAA airspace class extracted via regex |
+| `Unknown` | Class could not be extracted or source value missing |
+
+---
+
 ## Complete Column List
 
 ```
