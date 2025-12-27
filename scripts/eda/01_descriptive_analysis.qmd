@@ -1,561 +1,352 @@
 ---
 title: "ASRS UAS Reports: Descriptive Analysis"
-date: today
+author: "Michael J. Hickey"
+date: "2025-12-27"
+format:
+  html:
+    toc: true
+    embed-resources: true
+  docx:
+    toc: true
+execute:
+  echo: false
+  warning: false
+  message: false
 ---
-
-## Setup and Data Load
 
 ```{r}
 #| label: setup
-
+#| include: false
 here::i_am("scripts/eda/01_descriptive_analysis.qmd")
-
-library(tidyverse)
-library(janitor)
-library(skimr)
-library(gt)
-library(scales)
-library(glue)
-
-# Source from project root so relative paths resolve correctly
-withr::with_dir(here::here(), source("R/import_asrs.R"))
-withr::with_dir(here::here(), source("R/validate_asrs.R"))
-
-asrs_data <- import_asrs(here::here("data/asrs_curated_drone_reports.csv"))
-validate_asrs(asrs_data, strict = FALSE)
 ```
 
+# Descriptive Findings
+
+## Narrative summary
+
+# Descriptive Findings: ASRS UAS Encounter Reports
+
+*Draft generated: 2025-12-26*
+
+---
+
+## Data overview and completeness
+
+This analysis examines 50 UAS encounter reports from the NASA Aviation Safety Reporting System (ASRS), spanning 2024-11-01 to 2025-03-01. The dataset contains 125 coded fields per report.
+
+Key observations about data completeness:
+
+- The dataset represents a curated sample of UAS encounters, not a random sample of all aviation safety reports.
+- Core identification fields (report ID, date) are complete for all 50 reports.
+- Operational context variables show varying availability: time of day was
+  reported for 46 of 50 reports (92%); flight phase was reported for 47 of
+  50 reports (94%), with 3 coded as 'Unknown'; airspace class was reported
+  for 30 of 50 reports (60%), with 20 coded as 'Unknown'; and light
+  conditions were reported for 26 of 50 reports (52%).
+- Event coding fields (anomaly tags, contributing factors) are complete, 
+  reflecting ASRS analyst review.
+- Miss distance information is available for a subset of reports where 
+  proximity data was reported and parseable.
+- 'Unknown' values in summaries indicate missing or not reported data, not 
+  a distinct category.
+
+## Operational context of encounters
+
+**Time of day**: The most common reporting period was 1201-1800, accounting for 21 of 46 reports with time data reported (46%). Four reports lacked time of day data. This aligns with typical daytime flight operations.
+
+**Flight phase**: Arrival phase accounted for 23 of 47 reports with phase reported (49%), followed by Enroute (13 reports, 28%). Three reports were coded as 'Unknown' (missing/not reported).
+
+**Airspace class**: Class B airspace was most frequently reported, appearing in 13 of 30 reports with airspace class reported (43%). Twenty reports were coded as 'Unknown' (missing/not reported).
+
+**Light conditions**: Daylight conditions were present in 19 of 26 reports with lighting data reported (73%). Twenty-four reports lacked light condition data.
+
+## Detection and reporting patterns
+
+Cross-tabulation of detection and reporting variables reveals patterns 
+in how encounters are identified and documented:
+
+- The most common reporter-time combination was Air Carrier during 1201-1800, with 9 reports.
+- Person Flight Crew was the most common detection source during Arrival phase (17 reports).
+
+## Safety significance markers
+
+Three markers of safety significance were examined: near mid-air collision 
+(NMAC) tags, evasive action taken, and ATC assistance or clarification 
+requested.
+
+- **NMAC**: Present in 23 of 50 reports (46%, 95% CI [33%, 60%]). NMAC tag present in events__anomaly.
+- **Evasive action**: Present in 6 of 50 reports (12%, 95% CI [6%, 24%]). Evasive Action in events__result.
+- **ATC assistance**: Present in 5 of 50 reports (10%, 95% CI [4%, 21%]). ATC Assistance or Clarification in events__result.
+
+The wide confidence intervals reflect the small sample size and should be 
+interpreted with caution. These proportions describe this curated sample 
+and should not be generalized to all UAS encounters.
+
+
+## Context of NMAC tags
+
+The following subsections describe how NMAC prevalence varies across operational context variables. See Table 4 and Figures 4-6 for visual representations.
+
+### NMAC by detector
+
+Among reports with detector = Person Flight Crew, NMAC was present in 22 of 29 reports (75.9%, Wilson 95% CI [57.9%, 87.8%]). Among reports with detector = Person UAS Crew, NMAC was present in 1 of 15 reports (6.7%, Wilson 95% CI [1.2%, 29.8%]).
+
+These patterns describe this sample of reports and should not be interpreted as population rates or causal effects.
+
+### NMAC by flight phase
+
+Among reports with flight phase = Arrival, NMAC was present in 14 of 23 reports (60.9%, Wilson 95% CI [40.8%, 77.8%]). Among reports with flight phase = Enroute, NMAC was present in 6 of 13 reports (46.2%, Wilson 95% CI [23.2%, 70.9%]). Among reports with flight phase = Departure, NMAC was present in 2 of 9 reports (22.2%, Wilson 95% CI [6.3%, 54.7%]).
+
+These patterns describe this sample of reports and should not be interpreted as population rates or causal effects.
+
+### NMAC by time of day
+
+Among reports with time block = 0601-1200, NMAC was present in 5 of 14 reports (35.7%, Wilson 95% CI [16.3%, 61.2%]). Among reports with time block = 1201-1800, NMAC was present in 9 of 21 reports (42.9%, Wilson 95% CI [24.5%, 63.5%]). Among reports with time block = 1801-2400, NMAC was present in 5 of 8 reports (62.5%, Wilson 95% CI [30.6%, 86.3%]).
+
+These patterns describe this sample of reports and should not be interpreted as population rates or causal effects.
+
+### Summary observations
+
+- **Detector separation**: In this sample, NMAC tags were more frequent in reports detected by flight crew than by UAS crew (see denominators above).
+
+- **Phase patterns**: NMAC tags were most common in Arrival in this sample; intervals overlapped across phases.
+
+- **Time of day**: Time-block comparisons are exploratory with wide intervals.
+
+- **Data notes**: Unknown indicates missing/not reported; groups with n < 5 were excluded from plots but remain in Table 4.
+
+## Dominant event and contributing-factor themes
+
+### Top anomaly tags
+
+Counts reflect report-level presence (each tag counted once per report,
+regardless of how many times it appears within that report).
+
+1. **Deviation / Discrepancy - Procedural FAR**: 42 of 50 reports (84%)
+2. **Deviation / Discrepancy - Procedural Published Material / Policy**: 42 of 50 reports (84%)
+3. **Airspace Violation All Types**: 41 of 50 reports (82%)
+
+### Top contributing factors
+
+Counts reflect report-level presence (each tag counted once per report,
+regardless of how many times it appears within that report).
+
+1. **Human Factors**: 46 of 50 reports (92%)
+2. **Software and Automation**: 9 of 50 reports (18%)
+3. **Procedure**: 7 of 50 reports (14%)
+
+### Co-occurring contributing factor themes
+
+The following factor pairs frequently appeared together within the same 
+reports, suggesting thematic associations rather than causal relationships:
+
+- **Aircraft** and **Software and Automation**: co-occurred in 5 of 50 reports (10%)
+- **Chart Or Publication** and **Human Factors**: co-occurred in 5 of 50 reports (10%)
+- **Environment - Non Weather Related** and **Human Factors**: co-occurred in 5 of 50 reports (10%)
+
+## What these descriptives do and do not support
+
+These findings describe patterns within a curated sample of ASRS UAS 
+encounter reports. Several limitations apply:
+
+- **Report-coded data**: All tags and classifications reflect ASRS analyst 
+  coding of voluntary reports, not objective measurements or population 
+  incidence rates.
+
+- **Short time window**: The data span approximately five months. No claims 
+  about temporal trends or seasonal patterns are supported.
+
+- **Curated sample**: These reports were selected by ASRS staff for UAS 
+  research purposes. The sample may not represent all UAS encounters or 
+  all ASRS reports.
+
+- **Miss distance sparsity**: Proximity measurements were available for 
+  only a subset of reports. Findings about miss distance apply only to 
+  available cases.
+
+- **'Unknown' = missing**: Categories labeled 'Unknown' indicate data that 
+  was not reported or could not be coded, not a distinct response category.
+
+- **No causal inference**: Associations between variables do not imply 
+  causation. Contributing factors are coded themes, not verified mechanisms.
+
+- **Small sample size**: Confidence intervals are wide, and percentage 
+  differences may not be statistically meaningful.
+
+- **Voluntary reporting**: ASRS relies on voluntary submissions. Reporting 
+  patterns may reflect reporter characteristics rather than event frequency.
+
+---
+
+*This draft was auto-generated from descriptive analysis outputs. 
+Review and edit before publication.*
+
+---
+
+## Tables
+
+The following tables summarize the dataset structure, operational context,
+severity markers, and NMAC prevalence patterns.
+
+**Table 1. Dataset overview and completeness**
+
+*Caption*: Summarizes dataset dimensions, date range, and field-level completeness across 125 coded variables.
+
+*Denominator note*: N = 50 reports. Denominators vary by field; n available is reported per variable.
+
 ```{r}
-#| label: validation-status
-
-# Validation runs above in setup chunk; warnings/messages display naturally.
-# Re-run here to show validation summary in report output.
-validate_asrs(asrs_data, strict = FALSE)
-```
-
-```{r}
-#| label: test-status
-
-# Run tests with summary reporter - output displays naturally
-withr::with_dir(
-  here::here(),
-  testthat::test_dir("tests/testthat", reporter = "summary")
-)
-```
-
-## Data Overview
-
-```{r}
-#| label: data-overview
-
-skim(asrs_data)
-```
-
-```{r}
-#| label: missingness
-
-missingness <- asrs_data |>
-  summarise(across(everything(), \(x) sum(is.na(x)))) |>
-  pivot_longer(everything(), names_to = "column", values_to = "n_missing") |>
-  mutate(pct_missing = n_missing / nrow(asrs_data) * 100) |>
-  arrange(desc(n_missing)) |>
-  filter(n_missing > 0)
-
-missingness |>
-  gt() |>
-  fmt_number(columns = pct_missing, decimals = 1) |>
-  cols_label(
-    column = "Column",
-    n_missing = "Missing (n)",
-    pct_missing = "Missing (%)"
-  )
-```
-
-```{r}
-#| label: dimensions
-
-tibble(
-  metric = c("Rows", "Columns", "Date Range Start", "Date Range End"),
-  value = c(
-    nrow(asrs_data),
-    ncol(asrs_data),
-    as.character(min(asrs_data$time__date, na.rm = TRUE)),
-    as.character(max(asrs_data$time__date, na.rm = TRUE))
-  )
-) |>
-  gt() |>
-  cols_label(metric = "Metric", value = "Value")
-```
-
-## Identify Reporter Populations
-
-```{r}
-#| label: reporter-type
-
-uas_role_pattern <- regex(
-  "Remote PIC|Person Manipulating Controls|Visual Observer",
-  ignore_case = TRUE
-)
-uas_loc_pattern <- regex(
-  "Field Station.*UAS|Ground Control Station.*UAS",
-  ignore_case = TRUE
-)
-atc_pattern <- regex(
-  paste(
-    c("Approach", "Departure", "Enroute", "Ground", "Local",
-      "Flight Data", "Clearance", "Supervisor", "CIC", "ATC"),
-    collapse = "|"
-  ),
-  ignore_case = TRUE
-)
-manned_role_pattern <- regex(
-  paste(
-    c("Captain", "First Officer", "Check Pilot", "Flight Engineer",
-      "Pilot Flying", "Pilot Not Flying", "Relief Pilot",
-      "Single Pilot", "Flight Crew", "Instructor"),
-    collapse = "|"
-  ),
-  ignore_case = TRUE
-)
-manned_loc_pattern <- regex("Aircraft", ignore_case = TRUE)
-
-asrs_data <- asrs_data |>
-  mutate(
-    is_uas_role = str_detect(
-      person1__function,
-      uas_role_pattern
-    ) |
-      str_detect(
-        person2__function,
-        uas_role_pattern
-      ),
-    is_uas_location = str_detect(
-      person1__location_of_person,
-      uas_loc_pattern
-    ) |
-      str_detect(
-        person2__location_of_person,
-        uas_loc_pattern
-      ),
-    is_atc = str_detect(
-      person1__function,
-      atc_pattern
-    ) |
-      str_detect(
-        person2__function,
-        atc_pattern
-      ),
-    is_manned_role = str_detect(
-      person1__function,
-      manned_role_pattern
-    ) |
-      str_detect(
-        person2__function,
-        manned_role_pattern
-      ),
-    is_manned_location = str_detect(
-      person1__location_of_person,
-      manned_loc_pattern
-    ) |
-      str_detect(
-        person2__location_of_person,
-        manned_loc_pattern
-      ),
-    reporter_type = case_when(
-      is_uas_role | is_uas_location ~ "UAS Operator",
-      is_atc ~ "ATC",
-      is_manned_role | is_manned_location ~ "Manned Aircraft",
-
-      # Explicit NA handling
-      is.na(person1__location_of_person) &
-        is.na(person2__location_of_person) ~ "Unknown",
-
-      # Fallback
-      TRUE ~ "Other"
-    )
-  )
-
-asrs_data |>
-  tabyl(reporter_type) |>
-  adorn_pct_formatting() |>
-  gt() |>
-  cols_label(
-    reporter_type = "Reporter Type",
-    n = "Count",
-    percent = "Percent"
-  )
-```
-
-```{r}
-#| label: reporter-type-validation
+#| label: table1
 #| echo: false
+#| message: false
+#| warning: false
 
-asrs_data |>
-  mutate(
-    p1_function = coalesce(person1__function, "NA"),
-    p2_function = coalesce(person2__function, "NA"),
-    p1_location = coalesce(person1__location_of_person, "NA"),
-    p2_location = coalesce(person2__location_of_person, "NA")
-  ) |>
-  count(
-    reporter_type,
-    p1_function,
-    p2_function,
-    p1_location,
-    p2_location,
-    sort = TRUE
-  ) |>
-  slice_head(n = 15) |>
-  gt() |>
-  tab_header(title = "Reporter Classification Validation (Top 15)") |>
-  cols_label(
-    reporter_type = "Reporter Type",
-    p1_function = "Person1 Function",
-    p2_function = "Person2 Function",
-    p1_location = "Person1 Location",
-    p2_location = "Person2 Location",
-    n = "Count"
-  )
+tbl <- readr::read_csv(here::here("output/tables/table1_overview_completeness.csv"), show_col_types = FALSE)
+knitr::kable(tbl)
 ```
 
-## Categorical Frequencies
+
+**Table 2. Operational context of encounters**
+
+*Caption*: Frequency distributions for operational context variables including time of day, flight phase, airspace class, and light conditions.
+
+*Denominator note*: N = 50 reports. n available varies by field due to missing data; percentages computed against both N total and n available.
 
 ```{r}
-#| label: freq-table-function
+#| label: table2
+#| echo: false
+#| message: false
+#| warning: false
 
-freq_table <- function(data, var, include_missing = TRUE) {
-  var_sym <- rlang::ensym(var)
-  total_n <- nrow(data)
-
-  tbl <- data |>
-    mutate(
-      value = dplyr::if_else(
-        is.na(!!var_sym),
-        "Missing",
-        as.character(!!var_sym)
-      )
-    ) |>
-    count(value, name = "n")
-
-  if (!include_missing) {
-    tbl <- tbl |> filter(value != "Missing")
-  }
-
-  tbl <- tbl |>
-    mutate(percent = n / total_n)
-
-  tbl_ordered <- bind_rows(
-    tbl |> filter(value != "Missing") |> arrange(desc(n)),
-    tbl |> filter(value == "Missing")
-  )
-
-  tbl_ordered |>
-    gt() |>
-    fmt_percent(columns = percent, decimals = 1) |>
-    cols_label(
-      value = deparse(var_sym),
-      n = "Count",
-      percent = "Percent"
-    )
-}
+tbl <- readr::read_csv(here::here("output/tables/table2_operational_context.csv"), show_col_types = FALSE)
+knitr::kable(tbl)
 ```
 
-### Time of Day
+
+**Table 2a. Optional cross-tabulations (detector by phase; reporter by time)**
+
+*Caption*: Cross-tabulations of detector by flight phase and reporter organization by time block.
+
+*Denominator note*: N = 50 reports. Row and column percentages reported; n available varies by variable pair.
 
 ```{r}
-#| label: freq-time-of-day
+#| label: table2a
+#| echo: false
+#| message: false
+#| warning: false
 
-freq_table(asrs_data, time__local_time_of_day)
+tbl <- readr::read_csv(here::here("output/tables/table2_optional_crosstabs.csv"), show_col_types = FALSE)
+knitr::kable(tbl)
 ```
 
-### Flight Conditions
+
+**Table 3. Safety significance markers with Wilson 95% intervals**
+
+*Caption*: Prevalence of NMAC tags, evasive action, and ATC assistance markers with Wilson 95% confidence intervals.
+
+*Denominator note*: N = 50 reports with complete data for all markers.
 
 ```{r}
-#| label: freq-flight-conditions
+#| label: table3
+#| echo: false
+#| message: false
+#| warning: false
 
-freq_table(asrs_data, environment__flight_conditions)
+tbl <- readr::read_csv(here::here("output/tables/table3_severity_markers.csv"), show_col_types = FALSE)
+knitr::kable(tbl)
 ```
 
-### Light Conditions
+
+**Table 4. NMAC prevalence by operational context with Wilson 95% intervals**
+
+*Caption*: NMAC tag prevalence stratified by detector, flight phase, and time of day with Wilson 95% confidence intervals.
+
+*Denominator note*: N = 50 reports. Groups with n < 5 flagged (plot_included = FALSE) but retained in table for transparency.
 
 ```{r}
-#| label: freq-light
+#| label: table4
+#| echo: false
+#| message: false
+#| warning: false
 
-freq_table(asrs_data, environment__light)
+tbl <- readr::read_csv(here::here("output/tables/table4_nmac_by_context.csv"), show_col_types = FALSE)
+knitr::kable(tbl)
 ```
 
-### FAR Part
 
-```{r}
-#| label: freq-far-part
+---
 
-freq_table(asrs_data, ac1__operating_under_far_part)
-```
+## Figures
 
-### Airspace
+The following figures visualize detection patterns, severity markers,
+dominant tags, and NMAC prevalence across operational context.
 
-```{r}
-#| label: freq-airspace
+**Figure 1. Event detection by flight phase**
 
-freq_table(asrs_data, ac1__airspace)
-```
+*Caption*: Who detects UAS encounters, and during which flight phases?
 
-### Primary Problem
+*Denominator note*: N = 50 reports. Detector available for n = 47 reports; phase available for n = 47 reports. Unknown indicates missing/not reported.
 
-```{r}
-#| label: freq-primary-problem
+![Figure 1. Event detection by flight phase](../../output/figures/fig1_detector_by_phase.png){fig-alt="Figure 1. Event detection by flight phase"}
 
-freq_table(asrs_data, assessments__primary_problem)
-```
 
-## Encounter Characteristics
+**Figure 2. Severity marker prevalence with Wilson 95% intervals**
 
-### Altitude Profile
+*Caption*: How frequently do NMAC, evasive action, and ATC assistance markers appear in reports?
 
-Where do UAS encounters occur? Most happen at relatively low altitudes, consistent
-with recreational and commercial drone operations under Part 107.
+*Denominator note*: N = 50 reports. Wilson 95% confidence intervals shown.
 
-```{r}
-#| label: altitude-summary
+![Figure 2. Severity marker prevalence with Wilson 95% intervals](../../output/figures/fig2_severity_markers_ci.png){fig-alt="Figure 2. Severity marker prevalence with Wilson 95% intervals"}
 
-tibble(
-  Metric = c("Altitude AGL (ft)", "Altitude MSL (ft)"),
-  N = c(
-    sum(!is.na(asrs_data$place__altitude_agl_single_value)),
-    sum(!is.na(asrs_data$place__altitude_msl_single_value))
-  ),
-  Median = c(
-    median(asrs_data$place__altitude_agl_single_value, na.rm = TRUE),
-    median(asrs_data$place__altitude_msl_single_value, na.rm = TRUE)
-  ),
-  Mean = c(
-    mean(asrs_data$place__altitude_agl_single_value, na.rm = TRUE),
-    mean(asrs_data$place__altitude_msl_single_value, na.rm = TRUE)
-  ),
-  Min = c(
-    min(asrs_data$place__altitude_agl_single_value, na.rm = TRUE),
-    min(asrs_data$place__altitude_msl_single_value, na.rm = TRUE)
-  ),
-  Max = c(
-    max(asrs_data$place__altitude_agl_single_value, na.rm = TRUE),
-    max(asrs_data$place__altitude_msl_single_value, na.rm = TRUE)
-  )
-) |>
-  gt() |>
-  fmt_number(columns = c(Median, Mean, Min, Max), decimals = 0)
-```
 
-```{r}
-#| label: altitude-distribution-agl
-#| fig-width: 10
-#| fig-height: 4
-#| fig-alt: "Histogram of UAS encounter altitudes above ground level (AGL) in feet, with a dashed red line at 400 feet indicating the Part 107 altitude limit."
+**Figure 3. Dominant tags in UAS encounter reports**
 
-asrs_data |>
-  filter(!is.na(place__altitude_agl_single_value)) |>
-  ggplot(aes(x = place__altitude_agl_single_value)) +
-  geom_histogram(binwidth = 250, fill = "steelblue", color = "white") +
-  geom_vline(
-    xintercept = 400,
-    linetype = "dashed",
-    color = "red",
-    linewidth = 1
-  ) +
-  annotate(
-    "text", x = 500, y = Inf, label = "Part 107\n400 ft limit",
-    hjust = 0, vjust = 1.5, color = "red", size = 3
-  ) +
-  labs(
-    title = "Encounter Altitude (AGL)",
-    x = "Altitude AGL (feet)",
-    y = "Count"
-  ) +
-  theme_minimal()
-```
+*Caption*: What anomaly types and contributing factors are most frequently tagged?
 
-```{r}
-#| label: altitude-distribution-msl
-#| fig-width: 10
-#| fig-height: 4
-#| fig-alt: "Histogram of UAS encounter altitudes above mean sea level (MSL) in feet, showing the distribution of reported encounter heights."
+*Denominator note*: N = 50 reports. Counts are report-level (each tag counted once per report regardless of repetition).
 
-asrs_data |>
-  filter(!is.na(place__altitude_msl_single_value)) |>
-  ggplot(aes(x = place__altitude_msl_single_value)) +
-  geom_histogram(binwidth = 1000, fill = "steelblue", color = "white") +
-  labs(
-    title = "Encounter Altitude (MSL)",
-    x = "Altitude MSL (feet)",
-    y = "Count"
-  ) +
-  theme_minimal()
-```
+![Figure 3. Dominant tags in UAS encounter reports](../../output/figures/fig3_top_tags.png){fig-alt="Figure 3. Dominant tags in UAS encounter reports"}
 
-### Proximity to Airports
 
-How close to airports and navigation aids do encounters occur?
+**Figure 4. NMAC prevalence by flight phase with Wilson 95% intervals**
 
-```{r}
-#| label: distance-summary
+*Caption*: How does NMAC prevalence vary by flight phase?
 
-asrs_data |>
-  filter(!is.na(place__relative_position_distance_nautical_miles)) |>
-  summarise(
-    N = n(),
-    Median = median(place__relative_position_distance_nautical_miles),
-    Mean = mean(place__relative_position_distance_nautical_miles),
-    Min = min(place__relative_position_distance_nautical_miles),
-    Max = max(place__relative_position_distance_nautical_miles)
-  ) |>
-  mutate(Metric = "Distance from Reference (nm)", .before = 1) |>
-  gt() |>
-  fmt_number(columns = c(Median, Mean), decimals = 1)
-```
+*Denominator note*: N = 50 reports. Groups with n >= 5 included in plot. Wilson 95% confidence intervals shown.
 
-```{r}
-#| label: distance-distribution
-#| fig-width: 8
-#| fig-height: 4
-#| fig-alt: "Histogram of UAS encounter distances from airport or NAVAID reference points in nautical miles, with a dashed red line at 5 nm indicating typical Class D airspace radius."
+![Figure 4. NMAC prevalence by flight phase with Wilson 95% intervals](../../output/figures/fig4_nmac_by_phase_ci.png){fig-alt="Figure 4. NMAC prevalence by flight phase with Wilson 95% intervals"}
 
-asrs_data |>
-  filter(!is.na(place__relative_position_distance_nautical_miles)) |>
-  ggplot(aes(x = place__relative_position_distance_nautical_miles)) +
-  geom_histogram(binwidth = 2, fill = "steelblue", color = "white") +
-  geom_vline(xintercept = 5, linetype = "dashed", color = "red", linewidth = 1) +
-  annotate(
-    "text", x = 6, y = Inf, label = "5 nm\n(Class D typical)",
-    hjust = 0, vjust = 1.5, color = "red", size = 3
-  ) +
-  labs(
-    title = "Distance from Airport/NAVAID Reference",
-    x = "Distance (nautical miles)",
-    y = "Count"
-  ) +
-  theme_minimal()
-```
 
-## Cross-tabulations
+**Figure 5. NMAC prevalence by detector with Wilson 95% intervals**
 
-### Reporter Type by FAR Part
+*Caption*: How does NMAC prevalence vary by detection source?
 
-```{r}
-#| label: crosstab-reporter-far
+*Denominator note*: N = 50 reports. Groups with n >= 5 included in plot. Wilson 95% confidence intervals shown.
 
-ct_farp_counts <- asrs_data |>
-  tabyl(reporter_type, ac1__operating_under_far_part) |>
-  adorn_totals("col")
+![Figure 5. NMAC prevalence by detector with Wilson 95% intervals](../../output/figures/fig5_nmac_by_detector_ci.png){fig-alt="Figure 5. NMAC prevalence by detector with Wilson 95% intervals"}
 
-ct_farp_pct <- ct_farp_counts |>
-  adorn_percentages("row") |>
-  adorn_pct_formatting() |>
-  adorn_ns()
 
-ct_farp_total <- ct_farp_counts |>
-  adorn_totals("row") |>
-  filter(reporter_type == "Total") |>
-  mutate(across(-reporter_type, as.character))
+**Figure 6. NMAC prevalence by time of day with Wilson 95% intervals**
 
-bind_rows(ct_farp_pct, ct_farp_total) |>
-  gt() |>
-  tab_header(title = "Reporter Type by FAR Part (Row %)")
-```
+*Caption*: How does NMAC prevalence vary by time of day?
 
-### Reporter Type by Time of Day
+*Denominator note*: N = 50 reports. Groups with n >= 5 included in plot. Wilson 95% confidence intervals shown.
 
-```{r}
-#| label: crosstab-reporter-time
+![Figure 6. NMAC prevalence by time of day with Wilson 95% intervals](../../output/figures/fig6_nmac_by_timeblock_ci.png){fig-alt="Figure 6. NMAC prevalence by time of day with Wilson 95% intervals"}
 
-ct_time_counts <- asrs_data |>
-  tabyl(reporter_type, time__local_time_of_day) |>
-  adorn_totals("col")
 
-ct_time_pct <- ct_time_counts |>
-  adorn_percentages("row") |>
-  adorn_pct_formatting() |>
-  adorn_ns()
+---
 
-ct_time_total <- ct_time_counts |>
-  adorn_totals("row") |>
-  filter(reporter_type == "Total") |>
-  mutate(across(-reporter_type, as.character))
+## Reproducibility
 
-bind_rows(ct_time_pct, ct_time_total) |>
-  gt() |>
-  tab_header(title = "Reporter Type by Time of Day (Row %)")
-```
+This document was generated from CSV and PNG outputs in `output/`.
 
-## Visualizations
+**Assembly timestamp**: 2025-12-27 00:24:06
 
-### Reports by Month
+**Source scripts**:
 
-```{r}
-#| label: viz-reports-by-month
-#| fig-width: 10
-#| fig-height: 5
-#| fig-alt: "Bar chart showing the number of ASRS UAS reports per month over time."
+- `scripts/eda/01_audit.R` through `scripts/eda/10_build_inventory_captions.R`
+- `scripts/eda/11_assemble_descriptives_qmd.R`
 
-asrs_data |>
-  filter(!is.na(time__date)) |>
-  count(time__date) |>
-  ggplot(aes(x = time__date, y = n)) +
-  geom_col(fill = "steelblue") +
-  labs(
-    title = "ASRS UAS Reports by Month",
-    subtitle = glue::glue(
-      "N = {sum(!is.na(asrs_data$time__date))} reports with valid dates"
-    ),
-    x = "Date",
-    y = "Number of Reports"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
+All numeric values in tables are programmatically generated from the
+underlying data to ensure consistency and prevent transcription errors.
 
-### Altitude AGL by Reporter Type
-
-```{r}
-#| label: viz-altitude-by-reporter
-#| fig-width: 8
-#| fig-height: 5
-#| fig-alt: "Box plot comparing altitude above ground level (AGL) distributions across different reporter types: ATC, Manned Aircraft, Other, UAS Operator, and Unknown."
-
-asrs_data |>
-  filter(!is.na(place__altitude_agl_single_value)) |>
-  ggplot(aes(x = reporter_type, y = place__altitude_agl_single_value)) +
-  geom_boxplot(fill = "steelblue", alpha = 0.7) +
-  labs(
-    title = "Altitude AGL by Reporter Type",
-    x = "Reporter Type",
-    y = "Altitude AGL (feet)"
-  ) +
-  theme_minimal()
-```
-
-### Incidents by Airspace Class
-
-```{r}
-#| label: viz-airspace-class
-#| fig-width: 8
-#| fig-height: 5
-#| fig-alt: "Horizontal bar chart showing the count of UAS incidents by airspace class, ordered from Class A through Class G and Unknown/Other."
-
-asrs_data |>
-  mutate(
-    airspace_class = str_extract(ac1__airspace, "Class [A-G]") |>
-      replace_na("Unknown/Other") |>
-      fct_relevel(
-        "Unknown/Other", "Class G", "Class E", "Class D",
-        "Class C", "Class B", "Class A"
-      )
-  ) |>
-  count(airspace_class, .drop = FALSE) |>
-  ggplot(aes(x = n, y = airspace_class)) +
-  geom_col(fill = "steelblue") +
-  labs(
-    title = "UAS Incidents by Airspace Class",
-    x = "Number of Reports",
-    y = "Airspace Class"
-  ) +
-  theme_minimal()
-```
