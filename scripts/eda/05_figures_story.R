@@ -61,10 +61,16 @@ fig1_counts <- fig1_data |>
   count(detector, phase, .drop = FALSE) |>
   mutate(n = replace_na(n, 0))
 
+max_count <- max(fig1_counts$n)
+
 fig1 <- ggplot(fig1_counts, aes(x = phase, y = detector, fill = n)) +
   geom_tile(color = "white", linewidth = 0.5) +
   geom_text(aes(label = n), color = "black", size = 3.5) +
-  scale_fill_gradient(low = "white", high = "steelblue", name = "Count") +
+  scale_fill_gradient(
+    low = "white", high = "steelblue", name = "Count",
+    limits = c(0, max_count),
+    breaks = seq(0, max_count, by = ceiling(max_count / 4))
+  ) +
   labs(
     title = "Event Detection by Flight Phase",
     subtitle = paste0(
@@ -147,28 +153,28 @@ cat("Written: fig2_severity_markers_ci.png\n")
 top_anomaly <- tags_anomaly |>
   slice_head(n = 10) |>
   mutate(
-    tag_short = str_trunc(tag, 40),
-    tag_short = fct_reorder(tag_short, n_reports_with_tag)
+    tag_wrap = str_wrap(tag, width = 35),
+    tag_wrap = fct_reorder(tag_wrap, n_reports_with_tag)
   )
 
 top_cf <- tags_cf |>
   slice_head(n = 10) |>
   mutate(
-    tag_short = str_trunc(tag, 40),
-    tag_short = fct_reorder(tag_short, n_reports_with_tag)
+    tag_wrap = str_wrap(tag, width = 35),
+    tag_wrap = fct_reorder(tag_wrap, n_reports_with_tag)
   )
 
 n_anomaly_field <- tags_anomaly$n_reports_field_present[1]
 n_cf_field <- tags_cf$n_reports_field_present[1]
 
-panel_a <- ggplot(top_anomaly, aes(x = n_reports_with_tag, y = tag_short)) +
- geom_col(fill = "steelblue", width = 0.7) +
+panel_a <- ggplot(top_anomaly, aes(x = n_reports_with_tag, y = tag_wrap)) +
+  geom_col(fill = "steelblue", width = 0.7) +
   geom_text(
     aes(label = paste0(n_reports_with_tag, " (", pct_of_all_reports, "%)")),
     hjust = -0.1,
-    size = 3
+    size = 2.8
   ) +
-  scale_x_continuous(expand = expansion(mult = c(0, 0.3))) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.25))) +
   labs(
     title = "A. Top Anomaly Tags",
     subtitle = paste0(
@@ -181,17 +187,18 @@ panel_a <- ggplot(top_anomaly, aes(x = n_reports_with_tag, y = tag_short)) +
   theme(
     panel.grid.minor = element_blank(),
     panel.grid.major.y = element_blank(),
-    plot.subtitle = element_text(size = 8, color = "gray40")
+    plot.subtitle = element_text(size = 8, color = "gray40"),
+    axis.text.y = element_text(size = 8, lineheight = 0.9)
   )
 
-panel_b <- ggplot(top_cf, aes(x = n_reports_with_tag, y = tag_short)) +
+panel_b <- ggplot(top_cf, aes(x = n_reports_with_tag, y = tag_wrap)) +
   geom_col(fill = "darkorange", width = 0.7) +
   geom_text(
     aes(label = paste0(n_reports_with_tag, " (", pct_of_all_reports, "%)")),
     hjust = -0.1,
-    size = 3
+    size = 2.8
   ) +
-  scale_x_continuous(expand = expansion(mult = c(0, 0.3))) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.25))) +
   labs(
     title = "B. Top Contributing Factor Tags",
     subtitle = paste0(
@@ -204,7 +211,8 @@ panel_b <- ggplot(top_cf, aes(x = n_reports_with_tag, y = tag_short)) +
   theme(
     panel.grid.minor = element_blank(),
     panel.grid.major.y = element_blank(),
-    plot.subtitle = element_text(size = 8, color = "gray40")
+    plot.subtitle = element_text(size = 8, color = "gray40"),
+    axis.text.y = element_text(size = 8, lineheight = 0.9)
   )
 
 fig3 <- panel_a / panel_b +
