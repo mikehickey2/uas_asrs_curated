@@ -1,128 +1,54 @@
 # Construct derived dataset for EDA
 # Builds analytic variables from cleaned ASRS data
+#
+# This script orchestrates the construction of derived columns using
+# helper functions from R/construct_helpers.R and validates the output
+# against the schema in R/asrs_constructs_schema.R.
 
 library(readr)
 library(dplyr)
-library(tidyr)
-library(stringr)
-library(lubridate)
-library(purrr)
+library(tibble)
+
+source("R/paths.R")
+source("R/construct_helpers.R")
+source("R/asrs_constructs_schema.R")
 
 dir.create("output/tables", showWarnings = FALSE, recursive = TRUE)
 
-data_path <- "output/asrs_uas_reports_clean.csv"
-asrs_data <- read_csv(data_path, show_col_types = FALSE) |>
+# -----------------------------------------------------------------------------
+# Load and prepare data
+# -----------------------------------------------------------------------------
+
+asrs_data <- read_csv(PATHS$curated_csv, show_col_types = FALSE) |>
   mutate(time__date = as.Date(time__date))
 
 asrs_data <- asrs_data |>
   mutate(across(where(is.character), ~ if_else(.x == "", NA_character_, .x)))
 
-phase_mapping <- tribble(
-  ~phase_simple, ~keywords, ~precedence_rank,
-  "Arrival", "Final Approach; Initial Approach; Descent; Landing", 1,
-  "Departure", "Takeoff / Launch; Climb", 2,
-  "Surface", "Taxi; Ground", 3,
-  "Enroute", "Cruise", 4,
-  "Unknown", "(default if no match)", 5
-)
+# -----------------------------------------------------------------------------
+# Derive all analytical columns
+# -----------------------------------------------------------------------------
 
-arrival_pattern <- regex(
-  "Final Approach|Initial Approach|Descent|Landing",
-  ignore_case = TRUE
-)
-departure_pattern <- regex("Takeoff|Launch|Climb", ignore_case = TRUE)
-surface_pattern <- regex("Taxi|Ground", ignore_case = TRUE)
-enroute_pattern <- regex("Cruise", ignore_case = TRUE)
+constructed <- derive_all_constructs(asrs_data)
 
-map_phase <- function(phase_raw) {
-  if (is.na(phase_raw)) {
-    return("Unknown")
-  }
-  tokens <- str_split(phase_raw, ";")[[1]] |>
-    str_trim() |>
-    discard(~ .x == "")
-  if (length(tokens) == 0) {
-    return("Unknown")
-  }
-  combined <- paste(tokens, collapse = " ")
-  if (str_detect(combined, arrival_pattern)) {
-    return("Arrival")
-  }
-  if (str_detect(combined, departure_pattern)) {
-    return("Departure")
-  }
-  if (str_detect(combined, surface_pattern)) {
-    return("Surface")
-  }
-  if (str_detect(combined, enroute_pattern)) {
-    return("Enroute")
-  }
-  "Unknown"
-}
+# -----------------------------------------------------------------------------
+# Validate constructed schema before writing
+# -----------------------------------------------------------------------------
 
-extract_airspace_class <- function(airspace) {
-  if (is.na(airspace)) {
-    return("Unknown")
-  }
-  match <- str_match(airspace, "Class\\s+([A-G])")
-  if (is.na(match[1, 1])) {
-    return("Unknown")
-  }
-  match[1, 2]
-}
+validate_constructed_schema(constructed)
 
-parse_miss_horizontal <- function(x) {
-  if (is.na(x)) {
-    return(NA_real_)
-  }
-  match <- str_match(x, regex("Horizontal\\s+(\\d+)", ignore_case = TRUE))
-  if (is.na(match[1, 1])) {
-    return(NA_real_)
-  }
-  as.numeric(match[1, 2])
-}
+# -----------------------------------------------------------------------------
+# Write outputs
+# -----------------------------------------------------------------------------
 
-parse_miss_vertical <- function(x) {
-  if (is.na(x)) {
-    return(NA_real_)
-  }
-  match <- str_match(x, regex("Vertical\\s+(\\d+)", ignore_case = TRUE))
-  if (is.na(match[1, 1])) {
-    return(NA_real_)
-  }
-  as.numeric(match[1, 2])
-}
+write_csv(phase_mapping_table, "output/tables/phase_mapping_used.csv")
+saveRDS(constructed, PATHS$constructed_rds)
 
-constructed <- asrs_data |>
-  mutate(
-    month = format(time__date, "%Y-%m"),
-    time_block = time__local_time_of_day,
-    reporter_org = person1__reporter_organization,
-    phase_raw = ac1__flight_phase,
-    phase_simple = sapply(phase_raw, map_phase),
-    airspace_class = sapply(ac1__airspace, extract_airspace_class),
-    flag_nmac = str_detect(
-      events__anomaly,
-      regex("\\bNMAC\\b", ignore_case = TRUE)
-    ) %in% TRUE,
-    flag_evasive = str_detect(
-      events__result,
-      regex("Evasive Action", ignore_case = TRUE)
-    ) %in% TRUE,
-    flag_atc = str_detect(
-      events__result,
-      regex("ATC Assistance|Clarification", ignore_case = TRUE)
-    ) %in% TRUE,
-    miss_horizontal_ft = sapply(events__miss_distance, parse_miss_horizontal),
-    miss_vertical_ft = sapply(events__miss_distance, parse_miss_vertical)
-  )
-
-write_csv(phase_mapping, "output/tables/phase_mapping_used.csv")
-
-saveRDS(constructed, "output/asrs_constructed.rds")
+# -----------------------------------------------------------------------------
+# QC Summary
+# -----------------------------------------------------------------------------
 
 n_total <- nrow(constructed)
-
 calc_pct <- function(n) round(n / n_total * 100, 1)
 
 n_month <- sum(!is.na(constructed$month))
@@ -193,23 +119,26 @@ time_block_freq <- constructed |>
 
 qc_summary <- bind_rows(
   derived_qc,
-  tibble(field = "--- phase_simple breakdown ---",
-         n_total = NA_integer_, n_available = NA_integer_,
-         pct_available = NA_real_),
+  tibble(
+    field = "--- phase_simple breakdown ---",
+    n_total = NA_integer_, n_available = NA_integer_, pct_available = NA_real_
+  ),
   phase_freq,
-  tibble(field = "--- airspace_class breakdown ---",
-         n_total = NA_integer_, n_available = NA_integer_,
-         pct_available = NA_real_),
+  tibble(
+    field = "--- airspace_class breakdown ---",
+    n_total = NA_integer_, n_available = NA_integer_, pct_available = NA_real_
+  ),
   airspace_freq,
-  tibble(field = "--- time_block breakdown ---",
-         n_total = NA_integer_, n_available = NA_integer_,
-         pct_available = NA_real_),
+  tibble(
+    field = "--- time_block breakdown ---",
+    n_total = NA_integer_, n_available = NA_integer_, pct_available = NA_real_
+  ),
   time_block_freq
 )
 
 write_csv(qc_summary, "output/tables/constructs_qc_summary.csv")
 
 cat("Constructs complete. Outputs written to:\n")
-cat("  - output/asrs_constructed.rds\n")
+cat("  -", PATHS$constructed_rds, "\n")
 cat("  - output/tables/phase_mapping_used.csv\n")
 cat("  - output/tables/constructs_qc_summary.csv\n")

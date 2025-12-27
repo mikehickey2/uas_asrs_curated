@@ -7,8 +7,9 @@ library(tidyr)
 library(stringr)
 library(lubridate)
 
-data_path <- "output/asrs_uas_reports_clean.csv"
-asrs_data <- read_csv(data_path, show_col_types = FALSE) |>
+source("R/paths.R")
+
+asrs_data <- read_csv(PATHS$curated_csv, show_col_types = FALSE) |>
   mutate(time__date = as.Date(time__date))
 
 n_rows <- nrow(asrs_data)

@@ -24,6 +24,12 @@
 #  12  12_render_descriptives.R      Render HTML + DOCX
 
 # =============================================================================
+# Path constants
+# =============================================================================
+
+source("R/paths.R")
+
+# =============================================================================
 # Pipeline definition
 # =============================================================================
 
@@ -38,7 +44,7 @@ pipeline <- list(
     num = 2,
     script = "scripts/eda/02_constructs.R",
     name = "Derived variables",
-    artifact = "output/asrs_constructed.rds"
+    artifact = PATHS$constructed_rds
   ),
   list(
     num = 3,
@@ -201,11 +207,10 @@ cat("==============================================\n")
 cat("\n")
 cat("Preflight checks:\n")
 
-input_csv <- "data/asrs_curated_drone_reports.csv"
-if (!file.exists(input_csv)) {
-  stop(paste0("  FAILED: Input CSV not found: ", input_csv))
+if (!file.exists(PATHS$raw_csv)) {
+  stop(paste0("  FAILED: Input CSV not found: ", PATHS$raw_csv))
 }
-cat("  Input CSV exists:", input_csv, "\n")
+cat("  Input CSV exists:", PATHS$raw_csv, "\n")
 
 render_enabled <- !no_render && any(
   vapply(pipeline[from_step:to_step], function(s) {

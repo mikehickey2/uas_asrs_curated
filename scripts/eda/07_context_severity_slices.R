@@ -11,11 +11,13 @@ library(binom)
 library(scales)
 library(purrr)
 
+source("R/paths.R")
+
 dir.create("output/tables", showWarnings = FALSE, recursive = TRUE)
 dir.create("output/figures", showWarnings = FALSE, recursive = TRUE)
 dir.create("output/notes", showWarnings = FALSE, recursive = TRUE)
 
-asrs <- readRDS("output/asrs_constructed.rds")
+asrs <- readRDS(PATHS$constructed_rds)
 n_total <- nrow(asrs)
 min_group_size <- 5
 

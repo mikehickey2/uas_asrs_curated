@@ -54,7 +54,7 @@ test_that("asrs_airspace_class_levels contains expected values", {
 # -----------------------------------------------------------------------------
 
 test_that("validate_constructed_schema passes on real RDS", {
-  rds_path <- file.path(.test_root, "output", "asrs_constructed.rds")
+  rds_path <- file.path(.test_root, "data", "asrs_constructed.rds")
   skip_if_not(file.exists(rds_path), "constructed dataset not available")
 
   asrs <- readRDS(rds_path)

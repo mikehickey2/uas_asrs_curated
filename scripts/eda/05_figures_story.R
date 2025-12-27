@@ -9,10 +9,12 @@ library(stringr)
 library(forcats)
 library(patchwork)
 
+source("R/paths.R")
+
 dir.create("output/figures", showWarnings = FALSE, recursive = TRUE)
 dir.create("output/notes", showWarnings = FALSE, recursive = TRUE)
 
-asrs <- readRDS("output/asrs_constructed.rds")
+asrs <- readRDS(PATHS$constructed_rds)
 severity_markers <- read_csv(
   "output/tables/table3_severity_markers.csv",
   show_col_types = FALSE

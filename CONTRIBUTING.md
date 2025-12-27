@@ -53,21 +53,20 @@ Adding new files requires approval.
 
 | Path | Commit? | Reason |
 |------|---------|--------|
-| `data/` | Yes | Raw source data (immutable) |
-| `output/asrs_uas_reports_clean.csv` | Yes | Canonical cleaned dataset |
+| `data/` | Yes | Project datasets: raw, curated, and constructed (ADR-006) |
 | `output/reports/*.html`, `*.docx` | Yes | Final deliverables |
 | `output/figures/*.png` | Yes | Publication-ready figures |
 | `output/tables/*.csv` | Optional | Machine-readable intermediates |
 | `output/notes/*.md` | No | Working documents (regenerable) |
-| `output/asrs_constructed.rds` | No | Intermediate data (regenerable) |
+
+**Data Products (ADR-006):**
+- `data/asrs_curated_drone_reports.csv` - raw ASRS export (immutable)
+- `data/asrs_uas_reports_clean.csv` - curated dataset (commit when source changes)
+- `data/asrs_constructed.rds` - constructed dataset (commit when logic changes)
 
 **Rationale:** Commit final deliverables so users can view results without
-running the pipeline. Skip regenerable intermediates to keep the repo clean.
-
-```bash
-# Verify no RDS files staged
-git diff --cached --name-only | grep -E "\.(rds|RDS)$"
-```
+running the pipeline. Commit data products for reproducibility.
+Skip regenerable intermediate artifacts (notes, temp files).
 
 ## Code Style
 

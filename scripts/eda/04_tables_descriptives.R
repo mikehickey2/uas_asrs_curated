@@ -10,10 +10,12 @@ library(forcats)
 library(purrr)
 library(binom)
 
+source("R/paths.R")
+
 dir.create("output/tables", showWarnings = FALSE, recursive = TRUE)
 dir.create("output/notes", showWarnings = FALSE, recursive = TRUE)
 
-asrs <- readRDS("output/asrs_constructed.rds")
+asrs <- readRDS(PATHS$constructed_rds)
 overview <- read_csv("output/tables/overview.csv", show_col_types = FALSE)
 missingness_domain <- read_csv(
   "output/tables/missingness_by_domain.csv",

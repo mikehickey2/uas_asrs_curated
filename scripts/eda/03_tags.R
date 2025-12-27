@@ -6,9 +6,11 @@ library(tidyr)
 library(stringr)
 library(readr)
 
+source("R/paths.R")
+
 dir.create("output/tables", showWarnings = FALSE, recursive = TRUE)
 
-asrs <- readRDS("output/asrs_constructed.rds")
+asrs <- readRDS(PATHS$constructed_rds)
 
 if ("acn" %in% names(asrs)) {
   id_col <- "acn"
