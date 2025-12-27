@@ -1,11 +1,5 @@
 # Validate ASRS data frame
 # Runs structural, type, categorical, range, prefix, and format checks.
-library(dplyr)
-library(rlang)
-library(checkmate)
-library(purrr)
-library(stringr)
-library(glue)
 source("R/validation_helpers.R")
 source("R/asrs_schema.R")
 
@@ -35,7 +29,7 @@ check_multi_value_format <- function(df, cols) {
     }
     vals <- df[[col]]
     pattern <- "^([^;]+)(; [^;]+)*$"
-    bad <- vals[!is.na(vals) & !str_detect(vals, pattern)]
+    bad <- vals[!is.na(vals) & !stringr::str_detect(vals, pattern)]
     ok <- length(bad) == 0
     msg <- if (ok) "Semicolon-delimited format ok" else
       glue::glue("{length(bad)} values not in semicolon format")
@@ -54,11 +48,11 @@ validate_asrs <- function(
   valid_values = asrs_valid_values,
   strict = FALSE
 ) {
-  assert_data_frame(df)
+  checkmate::assert_data_frame(df)
   range_bounds <- asrs_range_bounds
   multi_value_cols <- asrs_multi_value_cols
 
-  results <- bind_rows(
+  results <- dplyr::bind_rows(
     validation_result(
       "row_count",
       nrow(df) > 0,
@@ -86,12 +80,12 @@ validate_asrs <- function(
     check_multi_value_format(df, multi_value_cols)
   )
 
-  bad <- results |> filter(!ok)
+  bad <- results |> dplyr::filter(!ok)
   if (nrow(bad) > 0) {
     msg <- glue::glue("ASRS validation: {nrow(bad)} issues")
-    if (strict) abort(msg, results = bad) else warn(msg, results = bad)
+    if (strict) rlang::abort(msg, results = bad) else rlang::warn(msg, results = bad)
   } else {
-    inform("ASRS validation: all checks passed")
+    rlang::inform("ASRS validation: all checks passed")
   }
   invisible(df)
 }

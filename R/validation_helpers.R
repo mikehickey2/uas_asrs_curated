@@ -1,24 +1,17 @@
 # Validation helper functions for ASRS imports
 # Helpers return a tibble with `check`, `ok`, and `message` columns.
-library(dplyr)
-library(stringr)
-library(checkmate)
-library(rlang)
-library(tibble)
-library(glue)
-library(purrr)
 
 validation_result <- function(check, ok, message) {
-  tibble(check = check, ok = ok, message = message)
+  tibble::tibble(check = check, ok = ok, message = message)
 }
 
 #' Check column count and required names
 #' @export
 check_column_count <- function(df, expected_count, required_names = NULL) {
-  assert_data_frame(df)
-  assert_int(expected_count, lower = 1)
+  checkmate::assert_data_frame(df)
+  checkmate::assert_int(expected_count, lower = 1)
   if (!is.null(required_names)) {
-    assert_character(required_names, any.missing = FALSE, unique = TRUE)
+    checkmate::assert_character(required_names, any.missing = FALSE, unique = TRUE)
   }
   count_ok <- ncol(df) == expected_count
   missing <- if (is.null(required_names)) character(0) else
@@ -40,7 +33,7 @@ check_column_count <- function(df, expected_count, required_names = NULL) {
 #' Check ACN uniqueness
 #' @export
 check_acn_unique <- function(df) {
-  assert_data_frame(df)
+  checkmate::assert_data_frame(df)
   if (!"acn" %in% names(df)) {
     return(validation_result("acn_unique", FALSE, "acn column missing"))
   }
@@ -58,13 +51,13 @@ check_acn_unique <- function(df) {
 #' Check entity prefixes
 #' @export
 check_entity_prefixes <- function(df, prefixes) {
-  assert_data_frame(df)
-  assert_character(prefixes, any.missing = FALSE, unique = TRUE)
+  checkmate::assert_data_frame(df)
+  checkmate::assert_character(prefixes, any.missing = FALSE, unique = TRUE)
   allowed <- paste0(prefixes, "__")
   cols <- setdiff(names(df), "acn")
   bad <- cols[!purrr::map_lgl(
     cols,
-    ~ any(str_starts(.x, allowed))
+    ~ any(stringr::str_starts(.x, allowed))
   )]
   ok <- length(bad) == 0
   msg <- if (ok) "All columns use approved prefixes" else
@@ -75,8 +68,8 @@ check_entity_prefixes <- function(df, prefixes) {
 #' Check categorical values (handles multi-value splits)
 #' @export
 check_categorical_values <- function(df, valid_values) {
-  assert_data_frame(df)
-  assert_list(valid_values, types = "character", names = "unique")
+  checkmate::assert_data_frame(df)
+  checkmate::assert_list(valid_values, types = "character", names = "unique")
   purrr::map_dfr(names(valid_values), function(col) {
     if (!col %in% names(df)) {
       return(validation_result(col, FALSE, "column missing"))
@@ -85,7 +78,7 @@ check_categorical_values <- function(df, valid_values) {
     actual <- unique(df[[col]])
     bad <- purrr::discard(actual, is.na) |>
       purrr::discard(function(x) {
-        parts <- str_split(x, ";\\s*")[[1]]
+        parts <- stringr::str_split(x, ";\\s*")[[1]]
         all(parts %in% allowed)
       })
     ok <- length(bad) == 0
@@ -99,14 +92,14 @@ check_categorical_values <- function(df, valid_values) {
 #' Check numeric ranges
 #' @export
 check_numeric_range <- function(df, ranges) {
-  assert_data_frame(df)
-  assert_list(ranges, names = "unique")
+  checkmate::assert_data_frame(df)
+  checkmate::assert_list(ranges, names = "unique")
   purrr::map_dfr(names(ranges), function(col) {
     if (!col %in% names(df)) {
       return(validation_result(col, FALSE, "column missing"))
     }
     bounds <- ranges[[col]]
-    assert_list(bounds, types = "numeric", any.missing = FALSE, len = 2)
+    checkmate::assert_list(bounds, types = "numeric", any.missing = FALSE, len = 2)
     vals <- df[[col]]
     if (!is.numeric(vals)) {
       return(validation_result(col, FALSE, "column not numeric"))
@@ -124,10 +117,10 @@ check_numeric_range <- function(df, ranges) {
 #' Check date range
 #' @export
 check_date_range <- function(df, column, min_date, max_date) {
-  assert_data_frame(df)
-  assert_string(column)
-  assert_date(min_date)
-  assert_date(max_date)
+  checkmate::assert_data_frame(df)
+  checkmate::assert_string(column)
+  checkmate::assert_date(min_date)
+  checkmate::assert_date(max_date)
   if (!column %in% names(df)) {
     return(validation_result(column, FALSE, "column missing"))
   }

@@ -1,6 +1,6 @@
 Render Log
 ===========
-Started: 2025-12-27 16:53:05.321579
+Started: 2025-12-27 18:01:43.835292
 
 Preflight checks:
   Quarto found: /Applications/quarto/bin/quarto
@@ -97,7 +97,7 @@ processing file: 01_descriptive_analysis.qmd
   
 Output created: ../../output/reports/01_descriptive_analysis.docx
 
-  DOCX rendered: /Users/mikehickey2/r_projects/uas_asrs_curated/output/reports/01_descriptive_analysis.docx (599.3 KB)
+  DOCX rendered: /Users/mikehickey2/r_projects/uas_asrs_curated/output/reports/01_descriptive_analysis.docx (599.4 KB)
 
 Post-render validation:
   HTML exists and >0 KB: TRUE
@@ -107,4 +107,4 @@ Summary:
   HTML: SUCCESS
   DOCX: SUCCESS
 
-Completed: 2025-12-27 16:53:17.801716
+Completed: 2025-12-27 18:01:54.709281

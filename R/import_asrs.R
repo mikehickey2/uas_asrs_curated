@@ -14,16 +14,11 @@
 #'     \item Logical columns for Y/N maintenance and UAS fields
 #'   }
 #' @export
-library(readr)
-library(dplyr)
-library(stringr)
-library(lubridate)
-library(rlang)
 source("R/asrs_schema.R")
 
 parse_logical_yn <- function(x) {
-  cleaned <- str_trim(str_to_upper(x))
-  case_when(
+  cleaned <- stringr::str_trim(stringr::str_to_upper(x))
+  dplyr::case_when(
     cleaned %in% c("Y", "YES", "TRUE") ~ TRUE,
     cleaned %in% c("N", "NO", "FALSE") ~ FALSE,
     TRUE ~ NA
@@ -194,24 +189,24 @@ import_asrs <- function(path) {
     "Synopsis" = "report1__synopsis"
   )
 
-  read_csv(
+  readr::read_csv(
     path,
     skip = 1,
-    col_types = cols(.default = col_character()),
+    col_types = readr::cols(.default = readr::col_character()),
     show_col_types = FALSE
   ) |>
-    rename(!!!set_names(names(rename_map), rename_map)) |>
-    select(all_of(unname(rename_map))) |>
-    mutate(
-      time__date = ym(time__date),
-      across(
-        all_of(asrs_integer_cols),
-        ~ parse_integer(.x, na = c("", NA_character_))
+    dplyr::rename(!!!rlang::set_names(names(rename_map), rename_map)) |>
+    dplyr::select(dplyr::all_of(unname(rename_map))) |>
+    dplyr::mutate(
+      time__date = lubridate::ym(time__date),
+      dplyr::across(
+        dplyr::all_of(asrs_integer_cols),
+        ~ readr::parse_integer(.x, na = c("", NA_character_))
       ),
-      across(
-        all_of(asrs_double_cols),
-        ~ parse_double(.x, na = c("", NA_character_))
+      dplyr::across(
+        dplyr::all_of(asrs_double_cols),
+        ~ readr::parse_double(.x, na = c("", NA_character_))
       ),
-      across(all_of(asrs_logical_cols), parse_logical_yn)
+      dplyr::across(dplyr::all_of(asrs_logical_cols), parse_logical_yn)
     )
 }

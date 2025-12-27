@@ -8,6 +8,9 @@
 #   - R/asrs_constructs_schema.R for schema validation
 #   - scripts/eda/02_constructs.R for orchestration
 
+# Alias for rlang .data pronoun used in dplyr pipelines
+.data <- rlang::.data
+
 # -----------------------------------------------------------------------------
 # Constants
 # -----------------------------------------------------------------------------
