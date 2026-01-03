@@ -23,6 +23,7 @@ source("R/import_asrs.R")
 source("R/validation_helpers.R")
 source("R/validate_asrs.R")
 source("R/validate_asrs_assertr.R")
+source("R/data_integrity.R")
 
 testthat::local_edition(3)
 

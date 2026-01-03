@@ -189,14 +189,21 @@ import_asrs <- function(path) {
     "Synopsis" = "report1__synopsis"
   )
 
-  readr::read_csv(
+  cli::cli_progress_step("Reading raw CSV from {basename(path)}")
+  raw_data <- readr::read_csv(
     path,
     skip = 1,
     col_types = readr::cols(.default = readr::col_character()),
     show_col_types = FALSE
-  ) |>
+  )
+
+  cli::cli_progress_step("Renaming columns to semantic names")
+  renamed_data <- raw_data |>
     dplyr::rename(!!!rlang::set_names(names(rename_map), rename_map)) |>
-    dplyr::select(dplyr::all_of(unname(rename_map))) |>
+    dplyr::select(dplyr::all_of(unname(rename_map)))
+
+  cli::cli_progress_step("Coercing column types")
+  result <- renamed_data |>
     dplyr::mutate(
       time__date = lubridate::ym(time__date),
       dplyr::across(
@@ -209,4 +216,10 @@ import_asrs <- function(path) {
       ),
       dplyr::across(dplyr::all_of(asrs_logical_cols), parse_logical_yn)
     )
+
+  cli::cli_alert_success(
+    "Import complete: {nrow(result)} rows x {ncol(result)} columns"
+  )
+
+  result
 }

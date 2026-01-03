@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-01-02T23:15:14-0500",
+  "generated_by": "uas_asrs_curated/R/data_integrity.R",
+  "source": {
+    "name": "NASA Aviation Safety Reporting System (ASRS)",
+    "url": "https://asrs.arc.nasa.gov",
+    "fetch_date": "2025-12-26",
+    "fetch_method": "manual_csv_export",
+    "curation_notes": "UAS/drone encounter filter applied by NASA ASRS staff"
+  },
+  "raw_file": {
+    "name": "asrs_curated_drone_reports.csv",
+    "hash_sha256": "0b98b54138c09f3665929492da6b8b3487f103ff95c4827e5695c0c20b586541",
+    "size_bytes": 112962,
+    "modified_at": "2025-12-26T11:22:11-0500"
+  },
+  "data_summary": {
+    "record_count": 50,
+    "column_count": 126,
+    "date_range": {
+      "earliest": "202411",
+      "latest": "202503"
+    }
+  },
+  "integrity": {
+    "locked": true,
+    "verification_command": "source('R/data_integrity.R'); verify_raw_integrity('0b98b54138c09f3665929492da6b8b3487f103ff95c4827e5695c0c20b586541')"
+  }
+}
