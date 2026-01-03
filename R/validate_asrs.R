@@ -29,10 +29,15 @@ check_multi_value_format <- function(df, cols) {
     }
     vals <- df[[col]]
     pattern <- "^([^;]+)(; [^;]+)*$"
-    bad <- vals[!is.na(vals) & !stringr::str_detect(vals, pattern)]
-    ok <- length(bad) == 0
-    msg <- if (ok) "Semicolon-delimited format ok" else
-      glue::glue("{length(bad)} values not in semicolon format")
+    is_bad_row <- !is.na(vals) & !stringr::str_detect(vals, pattern)
+    n_bad <- sum(is_bad_row)
+    ok <- n_bad == 0
+    if (ok) {
+      msg <- "Semicolon-delimited format ok"
+    } else {
+      acn_suffix <- format_acn_list(df, is_bad_row)
+      msg <- glue::glue("{n_bad} values not in semicolon format {acn_suffix}")
+    }
     validation_result(col, ok, msg)
   })
 }

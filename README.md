@@ -19,6 +19,7 @@ sample.
 git clone https://github.com/mikehickey2/uas_asrs_curated.git
 cd uas_asrs_curated
 Rscript -e "renv::restore()"
+git config core.hooksPath .githooks
 ```
 
 ### Dependencies

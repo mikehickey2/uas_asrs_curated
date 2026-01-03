@@ -5,6 +5,52 @@ validation_result <- function(check, ok, message) {
   tibble::tibble(check = check, ok = ok, message = message)
 }
 
+#' Format a list of ACN values for error messages
+#'
+#' Returns a compact string representation of ACN values for rows that failed
+#' validation. Truncates to max_show values with "and N more" suffix.
+#'
+#' @param df Data frame containing an `acn` column.
+#' @param row_indices Logical or integer vector identifying rows with issues.
+#' @param max_show Maximum number of ACNs to display before truncating.
+#' @return Character string like "ACN: 123, 456, 789" or
+#'   "ACN: 123, 456, ... and 3 more".
+#' @export
+format_acn_list <- function(df, row_indices, max_show = 5) {
+  checkmate::assert_data_frame(df)
+  checkmate::assert_int(max_show, lower = 1)
+
+  if (!"acn" %in% names(df)) {
+    return("")
+  }
+
+  if (is.logical(row_indices)) {
+    row_indices[is.na(row_indices)] <- FALSE
+    acns <- df$acn[row_indices]
+  } else {
+    checkmate::assert_integerish(row_indices, lower = 1, upper = nrow(df))
+    acns <- df$acn[row_indices]
+  }
+
+  acns <- acns[!is.na(acns)]
+  n_total <- length(acns)
+
+  if (n_total == 0) {
+    return("")
+  }
+
+  if (n_total <= max_show) {
+    return(paste0("(ACN: ", paste(acns, collapse = ", "), ")"))
+  }
+
+  shown <- acns[seq_len(max_show)]
+  remaining <- n_total - max_show
+  paste0(
+    "(ACN: ", paste(shown, collapse = ", "),
+    ", ... and ", remaining, " more)"
+  )
+}
+
 #' Check column count and required names
 #'
 #' Validates that a data frame has the expected number of columns and
@@ -105,16 +151,22 @@ check_categorical_values <- function(df, valid_values) {
       return(validation_result(col, FALSE, "column missing"))
     }
     allowed <- c(valid_values[[col]], NA_character_)
-    actual <- unique(df[[col]])
-    bad <- purrr::discard(actual, is.na) |>
-      purrr::discard(function(x) {
-        parts <- stringr::str_split(x, ";\\s*")[[1]]
-        all(parts %in% allowed)
-      })
-    ok <- length(bad) == 0
-    msg <- if (ok) "Values within allowed set" else glue::glue(
-      "Invalid values: {paste(bad, collapse = ', ')}"
-    )
+    is_bad_row <- purrr::map_lgl(df[[col]], function(x) {
+      if (is.na(x)) return(FALSE)
+      parts <- stringr::str_split(x, ";\\s*")[[1]]
+      !all(parts %in% allowed)
+    })
+    n_bad <- sum(is_bad_row)
+    ok <- n_bad == 0
+    if (ok) {
+      msg <- "Values within allowed set"
+    } else {
+      bad_values <- unique(df[[col]][is_bad_row])
+      acn_suffix <- format_acn_list(df, is_bad_row)
+      msg <- glue::glue(
+        "Invalid values: {paste(bad_values, collapse = ', ')} {acn_suffix}"
+      )
+    }
     validation_result(col, ok, msg)
   })
 }
@@ -145,10 +197,17 @@ check_numeric_range <- function(df, ranges) {
     }
     too_low <- vals < bounds[[1]]
     too_high <- vals > bounds[[2]]
-    bad <- sum(too_low | too_high, na.rm = TRUE)
-    ok <- bad == 0
-    msg <- if (ok) "Values within range" else
-      glue::glue("{bad} values outside [{bounds[[1]]}, {bounds[[2]]}]")
+    is_bad_row <- (too_low | too_high) & !is.na(vals)
+    n_bad <- sum(is_bad_row)
+    ok <- n_bad == 0
+    if (ok) {
+      msg <- "Values within range"
+    } else {
+      acn_suffix <- format_acn_list(df, is_bad_row)
+      msg <- glue::glue(
+        "{n_bad} values outside [{bounds[[1]]}, {bounds[[2]]}] {acn_suffix}"
+      )
+    }
     validation_result(col, ok, msg)
   })
 }

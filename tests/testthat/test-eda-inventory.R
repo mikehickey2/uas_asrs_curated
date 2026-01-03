@@ -12,8 +12,8 @@ parse_inventory_block <- function(lines, pattern) {
       title_line <- str_trim(lines[i])
       title_line <- str_remove(title_line, "^###\\s*")
 
-      pattern <- "^(Table|Figure)\\s+([0-9a-z]+)\\."
-      num <- str_extract(title_line, pattern, group = 2)
+      num_pattern <- "^(Table|Figure)\\s+([0-9a-z]+)\\."
+      num <- str_extract(title_line, num_pattern, group = 2)
       type <- str_extract(title_line, "^(Table|Figure)") |> str_to_lower()
       id <- paste0(type, num)
 

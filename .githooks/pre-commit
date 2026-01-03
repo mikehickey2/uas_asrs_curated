@@ -1,0 +1,28 @@
+#!/bin/sh
+# Pre-commit hook: Prevent raw data modification without manifest update
+#
+# If data/asrs_curated_drone_reports.csv is staged for commit,
+# require data/data_manifest.json to also be staged.
+
+RAW_CSV="data/asrs_curated_drone_reports.csv"
+MANIFEST="data/data_manifest.json"
+
+# Check if raw CSV is staged
+if git diff --cached --name-only | grep -q "^${RAW_CSV}$"; then
+    # Raw CSV is staged; check if manifest is also staged
+    if ! git diff --cached --name-only | grep -q "^${MANIFEST}$"; then
+        echo "ERROR: Raw data file staged without manifest update."
+        echo ""
+        echo "  Staged:  ${RAW_CSV}"
+        echo "  Missing: ${MANIFEST}"
+        echo ""
+        echo "When modifying raw data, you must also update the data manifest."
+        echo "Either:"
+        echo "  1. Stage ${MANIFEST} with your changes"
+        echo "  2. Unstage the raw CSV: git restore --staged ${RAW_CSV}"
+        echo ""
+        exit 1
+    fi
+fi
+
+exit 0
